@@ -1,0 +1,22 @@
+# 相依套件（npm install 會自動下載）
+node_modules/
+
+# 環境變數（含敏感資訊，不上傳）
+.env
+backend/.env
+
+# 資料庫檔（本機資料，不上傳）
+backend/temple.db
+backend/temple.db-shm
+backend/temple.db-wal
+
+# 上傳的圖片（本機檔案，不上傳）
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# 系統檔
+.DS_Store
+Thumbs.db
+
+# Vite 建置輸出
+frontend/dist/

@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 全域樣式 */
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background-color: #FFF8E7;
+  color: #2C1810;
+}
+
+/* 廟宇風格的標題裝飾 */
+.section-title {
+  @apply font-serif text-2xl md:text-3xl text-temple-red-dark text-center mb-8 relative;
+}
+
+.section-title::before,
+.section-title::after {
+  content: '◆';
+  @apply text-temple-gold mx-3 text-lg;
+}
+
+/* 金色邊框卡片 */
+.temple-card {
+  @apply bg-white border-2 border-temple-gold/30 rounded-sm shadow-md hover:shadow-lg transition-shadow duration-300;
+}
+
+/* 紅色按鈕 */
+.btn-primary {
+  @apply bg-temple-red text-white px-6 py-2.5 font-medium hover:bg-temple-red-dark transition-colors duration-200 rounded-sm;
+}
+
+.btn-secondary {
+  @apply bg-temple-gold text-temple-dark px-6 py-2.5 font-medium hover:bg-temple-gold-dark transition-colors duration-200 rounded-sm;
+}
+
+/* 傳統花紋分隔線 */
+.divider {
+  @apply flex items-center gap-4 my-8;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  @apply flex-1 border-t border-temple-gold/40;
+}
+
+/* 輪播圖片暗色遮罩上的文字 */
+.carousel-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+}
+
+/* 捲軸美化 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #C0392B; border-radius: 3px; }
