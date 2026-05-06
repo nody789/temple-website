@@ -50,13 +50,13 @@ export default function Register() {
     }
   };
 
-  const inputClass = 'w-full border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-temple-red transition-colors';
+  const inputClass = 'w-full border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-temple-green transition-colors';
   const labelClass = 'block text-sm font-medium text-temple-dark mb-1';
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-red-dark mb-2">線上報名</h1>
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">線上報名</h1>
         <div className="flex items-center justify-center gap-3">
           <div className="w-16 h-0.5 bg-temple-gold" />
           <span className="text-temple-gold text-xl">❖</span>
@@ -81,7 +81,7 @@ export default function Register() {
         {/* 姓名 */}
         <div>
           <label className={labelClass}>
-            姓名 <span className="text-temple-red">*</span>
+            姓名 <span className="text-temple-green">*</span>
           </label>
           <input
             type="text"
@@ -97,7 +97,7 @@ export default function Register() {
         {/* 電話 */}
         <div>
           <label className={labelClass}>
-            聯絡電話 <span className="text-temple-red">*</span>
+            聯絡電話 <span className="text-temple-green">*</span>
           </label>
           <input
             type="tel"

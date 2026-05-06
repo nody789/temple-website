@@ -10,7 +10,8 @@ const STATUS_MAP = {
 export default function RegistrationList() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [activityFilter, setActivityFilter] = useState('all');
 
   const load = () => {
     api.get('/registration').then((r) => setRecords(r.data)).finally(() => setLoading(false));
@@ -28,26 +29,74 @@ export default function RegistrationList() {
     load();
   };
 
-  const filtered = filter === 'all' ? records : records.filter((r) => r.status === filter);
+  // 從現有資料中取出不重複的活動列表
+  const activityOptions = [
+    ...new Map(
+      records
+        .filter((r) => r.activity_id)
+        .map((r) => [r.activity_id, { id: r.activity_id, title: r.activity_title }])
+    ).values(),
+  ];
+
+  const filtered = records.filter((r) => {
+    const matchStatus = statusFilter === 'all' || r.status === statusFilter;
+    const matchActivity = activityFilter === 'all'
+      ? true
+      : activityFilter === 'none'
+        ? !r.activity_id
+        : String(r.activity_id) === activityFilter;
+    return matchStatus && matchActivity;
+  });
 
   return (
     <div className="space-y-4">
-      {/* 篩選 */}
-      <div className="bg-white rounded shadow-sm p-4 flex items-center gap-3 flex-wrap">
-        <span className="text-sm text-gray-600 font-medium">篩選狀態：</span>
-        {['all', 'pending', 'confirmed', 'cancelled'].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`text-xs px-3 py-1.5 rounded border transition-colors ${
-              filter === s
-                ? 'bg-temple-red text-white border-temple-red'
-                : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-            }`}
+      {/* 篩選列 */}
+      <div className="bg-white rounded shadow-sm p-4 space-y-3">
+        {/* 活動分類篩選 */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-sm text-gray-600 font-medium shrink-0">篩選活動：</span>
+          <select
+            value={activityFilter}
+            onChange={(e) => setActivityFilter(e.target.value)}
+            className="text-xs border border-gray-300 rounded px-3 py-1.5 text-gray-700 focus:outline-none focus:border-temple-green"
           >
-            {s === 'all' ? `全部（${records.length}）` : `${STATUS_MAP[s].label}（${records.filter((r) => r.status === s).length}）`}
-          </button>
-        ))}
+            <option value="all">全部活動（{records.length}）</option>
+            {activityOptions.map((act) => (
+              <option key={act.id} value={String(act.id)}>
+                {act.title}（{records.filter((r) => r.activity_id === act.id).length}）
+              </option>
+            ))}
+            {records.some((r) => !r.activity_id) && (
+              <option value="none">未指定活動（{records.filter((r) => !r.activity_id).length}）</option>
+            )}
+          </select>
+        </div>
+
+        {/* 狀態篩選 */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-sm text-gray-600 font-medium shrink-0">篩選狀態：</span>
+          {['all', 'pending', 'confirmed', 'cancelled'].map((s) => {
+            const count = s === 'all'
+              ? records.filter((r) => activityFilter === 'all' || (activityFilter === 'none' ? !r.activity_id : String(r.activity_id) === activityFilter)).length
+              : records.filter((r) => {
+                  const matchActivity = activityFilter === 'all' ? true : activityFilter === 'none' ? !r.activity_id : String(r.activity_id) === activityFilter;
+                  return r.status === s && matchActivity;
+                }).length;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`text-xs px-3 py-1.5 rounded border transition-colors ${
+                  statusFilter === s
+                    ? 'bg-temple-green text-white border-temple-green'
+                    : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {s === 'all' ? `全部（${count}）` : `${STATUS_MAP[s].label}（${count}）`}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* 表格 */}

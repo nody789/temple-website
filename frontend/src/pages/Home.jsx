@@ -26,7 +26,7 @@ export default function Home() {
       <HeroSlider />
 
       {/* 裝飾標語 */}
-      <div className="bg-temple-red text-white text-center py-4 px-4">
+      <div className="bg-temple-green-dark text-white text-center py-4 px-4">
         <p className="font-serif text-lg tracking-widest">
           ❖ {settings.site_subtitle || '神恩浩蕩，庇佑四方'} ❖
         </p>
@@ -44,7 +44,7 @@ export default function Home() {
             />
           </div>
           <div className="space-y-4">
-            <h3 className="font-serif text-2xl text-temple-red-dark">
+            <h3 className="font-serif text-2xl text-temple-green-dark">
               {settings.site_name || '玄天上帝廟'}
             </h3>
             <div className="w-16 h-0.5 bg-temple-gold" />
@@ -65,7 +65,7 @@ export default function Home() {
       <div className="bg-temple-cream-dark py-6">
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-center gap-4 text-temple-gold">
           <span className="text-2xl">❧</span>
-          <span className="text-sm text-temple-brown tracking-widest">虔誠禮拜 · 祈求平安 · 傳承文化</span>
+          <span className="text-sm text-temple-green tracking-widest">虔誠禮拜 · 祈求平安 · 傳承文化</span>
           <span className="text-2xl">❧</span>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function Home() {
               to={`/news/${item.id}`}
               className="temple-card p-4 flex gap-4 hover:border-temple-gold/60"
             >
-              <div className="shrink-0 w-14 text-center bg-temple-red text-white rounded-sm py-1 px-2">
+              <div className="shrink-0 w-14 text-center bg-temple-green text-white rounded-sm py-1 px-2">
                 <div className="text-xs">{formatDate(item.published_at).split('/')[0]}</div>
                 <div className="text-lg font-bold leading-tight">
                   {formatDate(item.published_at).split('/')[1]}/{formatDate(item.published_at).split('/')[2]}
@@ -113,7 +113,7 @@ export default function Home() {
                   className="w-full h-40 object-cover"
                 />
                 <div className="p-4">
-                  <div className="text-xs text-temple-red font-medium mb-1">
+                  <div className="text-xs text-temple-green font-medium mb-1">
                     {formatDate(act.start_date)}
                     {act.end_date && act.end_date !== act.start_date && ` ~ ${formatDate(act.end_date)}`}
                   </div>
@@ -135,7 +135,7 @@ export default function Home() {
       </section>
 
       {/* 報名號召 */}
-      <section className="bg-temple-red py-12 text-center text-white">
+      <section className="bg-temple-green py-12 text-center text-white">
         <div className="max-w-2xl mx-auto px-4">
           <h2 className="font-serif text-2xl md:text-3xl font-bold mb-3">參與活動 · 共結善緣</h2>
           <p className="text-white/80 mb-6">歡迎信眾踴躍參加廟宇各項活動，一同祈福平安</p>

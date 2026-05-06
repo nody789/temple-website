@@ -1,0 +1,75 @@
+import { useEffect } from 'react';
+
+const areas = [
+  {
+    name: '正殿',
+    description: '本廟正殿供奉主神玄天上帝金身，殿內雕梁畫棟，金碧輝煌，為信眾禮拜祈福之主要空間。殿前設有大型香爐，香火終年鼎盛。',
+    img: 'https://picsum.photos/seed/env_hall/600/400',
+  },
+  {
+    name: '廟前廣場',
+    description: '廟前廣場寬敞舒適，可容納大型祭典活動。廣場設有石獅鎮守、花圃造景，環境清幽，為信眾聚集休憩之場所。',
+    img: 'https://picsum.photos/seed/env_square/600/400',
+  },
+  {
+    name: '後殿',
+    description: '後殿供奉地藏王菩薩及諸位神明，環境莊嚴肅穆，定期舉辦法會與誦經活動，歡迎信眾參與。',
+    img: 'https://picsum.photos/seed/env_rear/600/400',
+  },
+  {
+    name: '文物展覽室',
+    description: '展覽室收藏廟宇歷史文物、古匾額及珍貴器物，完整記錄本廟百年歷史沿革，是認識在地文化的最佳場所。',
+    img: 'https://picsum.photos/seed/env_exhibit/600/400',
+  },
+  {
+    name: '活動中心',
+    description: '活動中心提供各類藝文活動、講座、研習課程之場地，並備有完善的廚房設備，定期舉辦社區共餐活動。',
+    img: 'https://picsum.photos/seed/env_center/600/400',
+  },
+  {
+    name: '停車場',
+    description: '廟旁設有免費停車場，可容納小客車約30輛，前方亦有機車停放區，方便信眾前來禮拜。',
+    img: 'https://picsum.photos/seed/env_parking/600/400',
+  },
+];
+
+export default function Environment() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <main className="max-w-5xl mx-auto px-4 py-12">
+      {/* 頁面標題 */}
+      <div className="text-center mb-12">
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">環境介紹</h1>
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-16 h-0.5 bg-temple-gold" />
+          <span className="text-temple-gold text-xl">❖</span>
+          <div className="w-16 h-0.5 bg-temple-gold" />
+        </div>
+        <p className="text-sm text-gray-500 mt-4">歡迎參觀本廟各項設施，感受莊嚴清幽的宗教氛圍</p>
+      </div>
+
+      {/* 區域卡片 */}
+      <div className="grid md:grid-cols-2 gap-8">
+        {areas.map((area) => (
+          <div key={area.name} className="temple-card overflow-hidden">
+            <img
+              src={area.img}
+              alt={area.name}
+              className="w-full h-52 object-cover"
+            />
+            <div className="p-5">
+              <h2 className="font-serif text-xl text-temple-green-dark mb-2 flex items-center gap-2">
+                <span className="text-temple-gold text-sm">◆</span>
+                {area.name}
+              </h2>
+              <p className="text-sm text-gray-600 leading-relaxed">{area.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}

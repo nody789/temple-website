@@ -22,8 +22,8 @@ export default function HeroSlider() {
 
   if (slides.length === 0) {
     return (
-      <div className="w-full h-64 md:h-96 bg-temple-red/10 flex items-center justify-center">
-        <span className="text-temple-red/40 font-serif text-lg">載入中...</span>
+      <div className="w-full h-64 md:h-96 bg-temple-green/10 flex items-center justify-center">
+        <span className="text-temple-green/40 font-serif text-lg">載入中...</span>
       </div>
     );
   }

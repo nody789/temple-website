@@ -26,7 +26,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-temple-red flex items-center justify-center p-4">
+    <div className="min-h-screen bg-temple-green flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Logo 區 */}
         <div className="text-center mb-8">
@@ -50,7 +50,7 @@ export default function AdminLogin() {
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-red"
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-green"
               placeholder="請輸入帳號"
               required
               autoFocus
@@ -63,7 +63,7 @@ export default function AdminLogin() {
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-red"
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-green"
               placeholder="請輸入密碼"
               required
             />
@@ -72,7 +72,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-temple-red text-white py-2.5 rounded text-sm font-medium hover:bg-temple-red-dark transition-colors disabled:opacity-60"
+            className="w-full bg-temple-green text-white py-2.5 rounded text-sm font-medium hover:bg-temple-green-dark transition-colors disabled:opacity-60"
           >
             {loading ? '登入中...' : '登入'}
           </button>

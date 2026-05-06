@@ -54,7 +54,7 @@ export default function SiteSettings() {
     }
   };
 
-  const inputClass = 'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-red';
+  const inputClass = 'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-green';
   const Field = ({ label, name, type = 'text', placeholder }) => (
     <div>
       <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
@@ -105,7 +105,7 @@ export default function SiteSettings() {
           />
         </div>
 
-        <button type="submit" disabled={saving} className="bg-temple-red text-white px-6 py-2 text-sm rounded hover:bg-temple-red-dark disabled:opacity-60">
+        <button type="submit" disabled={saving} className="bg-temple-green text-white px-6 py-2 text-sm rounded hover:bg-temple-green-dark disabled:opacity-60">
           {saving ? '儲存中...' : '儲存設定'}
         </button>
       </form>

@@ -20,7 +20,7 @@ export default function News() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-red-dark mb-2">最新消息</h1>
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">最新消息</h1>
         <div className="flex items-center justify-center gap-3">
           <div className="w-16 h-0.5 bg-temple-gold" />
           <span className="text-temple-gold text-xl">❖</span>
@@ -40,7 +40,7 @@ export default function News() {
               to={`/news/${item.id}`}
               className="temple-card p-5 flex gap-4 items-start hover:border-temple-gold/60 block"
             >
-              <div className="shrink-0 w-16 text-center bg-temple-red text-white rounded-sm py-1.5">
+              <div className="shrink-0 w-16 text-center bg-temple-green text-white rounded-sm py-1.5">
                 <div className="text-xs leading-tight">{new Date(item.published_at).getFullYear()}</div>
                 <div className="text-lg font-bold leading-tight">
                   {String(new Date(item.published_at).getMonth() + 1).padStart(2, '0')}/
@@ -50,7 +50,7 @@ export default function News() {
               <div className="flex-1 min-w-0">
                 <h2 className="font-medium text-temple-dark text-base">{item.title}</h2>
                 <p className="text-sm text-gray-500 mt-1.5 line-clamp-2">{item.content}</p>
-                <span className="text-xs text-temple-red mt-2 inline-block">閱讀全文 ›</span>
+                <span className="text-xs text-temple-green mt-2 inline-block">閱讀全文 ›</span>
               </div>
             </Link>
           ))}

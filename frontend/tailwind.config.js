@@ -4,18 +4,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 廟宇色系
+        // 廟宇色系（仿承天禪寺風格：深綠 + 金色 + 淡米白）
         temple: {
-          red: '#C0392B',
-          'red-dark': '#922B21',
-          'red-light': '#E74C3C',
-          gold: '#D4AC0D',
-          'gold-light': '#F1C40F',
-          'gold-dark': '#B7950B',
-          cream: '#FFF8E7',
-          'cream-dark': '#FAF0D7',
-          dark: '#2C1810',
-          brown: '#6E2F1A',
+          green: '#2E6B1A',
+          'green-dark': '#1F4D10',
+          'green-light': '#4A8A2F',
+          gold: '#C8A014',
+          'gold-light': '#D4B830',
+          'gold-dark': '#A88810',
+          cream: '#F9F7F4',
+          'cream-dark': '#EFEBE4',
+          dark: '#1A2E0E',
+          brown: '#3D5E28',
         },
       },
       fontFamily: {

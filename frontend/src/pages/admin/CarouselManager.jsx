@@ -70,7 +70,7 @@ export default function CarouselManager() {
     load();
   };
 
-  const inputClass = 'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-red';
+  const inputClass = 'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-temple-green';
 
   return (
     <div className="space-y-6">
@@ -152,7 +152,7 @@ export default function CarouselManager() {
           </div>
 
           <div className="flex gap-2">
-            <button type="submit" disabled={saving} className="bg-temple-red text-white px-5 py-2 text-sm rounded hover:bg-temple-red-dark disabled:opacity-60">
+            <button type="submit" disabled={saving} className="bg-temple-green text-white px-5 py-2 text-sm rounded hover:bg-temple-green-dark disabled:opacity-60">
               {saving ? '儲存中...' : editId ? '儲存修改' : '新增輪播'}
             </button>
             {editId && (

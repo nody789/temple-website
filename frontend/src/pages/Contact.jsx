@@ -12,7 +12,7 @@ export default function Contact() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-red-dark mb-2">聯絡我們</h1>
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">聯絡我們</h1>
         <div className="flex items-center justify-center gap-3">
           <div className="w-16 h-0.5 bg-temple-gold" />
           <span className="text-temple-gold text-xl">❖</span>
@@ -24,7 +24,7 @@ export default function Contact() {
         {/* 聯絡資訊 */}
         <div className="space-y-4">
           <div className="temple-card p-6">
-            <h2 className="font-serif text-lg text-temple-red mb-4 border-b border-temple-gold/30 pb-2">
+            <h2 className="font-serif text-lg text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
               基本資訊
             </h2>
             <ul className="space-y-4">
@@ -38,7 +38,7 @@ export default function Contact() {
                 <li key={label} className="flex gap-3">
                   <span className="text-lg shrink-0 mt-0.5">{icon}</span>
                   <div>
-                    <span className="text-xs text-temple-red-dark font-medium block">{label}</span>
+                    <span className="text-xs text-temple-green-dark font-medium block">{label}</span>
                     <span className="text-sm text-gray-700">{value}</span>
                   </div>
                 </li>
@@ -47,7 +47,7 @@ export default function Contact() {
           </div>
 
           <div className="temple-card p-6">
-            <h2 className="font-serif text-lg text-temple-red mb-4 border-b border-temple-gold/30 pb-2">
+            <h2 className="font-serif text-lg text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
               交通指引
             </h2>
             <div className="space-y-3 text-sm text-gray-700">
@@ -86,7 +86,7 @@ export default function Contact() {
                 href={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address || '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 inline-block text-sm text-temple-red hover:underline"
+                className="mt-2 inline-block text-sm text-temple-green hover:underline"
               >
                 在 Google Maps 中開啟 ›
               </a>

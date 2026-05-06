@@ -34,6 +34,7 @@ export default function Footer() {
           <ul className="space-y-1.5 text-sm text-white/70">
             {[
               { to: '/about', label: '本廟簡介' },
+              { to: '/environment', label: '環境介紹' },
               { to: '/news', label: '最新消息' },
               { to: '/activities', label: '活動訊息' },
               { to: '/register', label: '線上報名' },

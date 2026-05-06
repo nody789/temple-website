@@ -20,7 +20,7 @@ export default function Activities() {
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-red-dark mb-2">活動訊息</h1>
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">活動訊息</h1>
         <div className="flex items-center justify-center gap-3">
           <div className="w-16 h-0.5 bg-temple-gold" />
           <span className="text-temple-gold text-xl">❖</span>
@@ -42,7 +42,7 @@ export default function Activities() {
                 className="w-full h-44 object-cover"
               />
               <div className="p-5">
-                <div className="flex items-center gap-2 text-xs text-temple-red font-medium mb-2">
+                <div className="flex items-center gap-2 text-xs text-temple-green font-medium mb-2">
                   <span>📅</span>
                   <span>
                     {formatDate(act.start_date)}
@@ -56,7 +56,7 @@ export default function Activities() {
                 <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">{act.description}</p>
                 <Link
                   to="/register"
-                  className="mt-4 inline-block text-sm text-temple-red font-medium hover:underline"
+                  className="mt-4 inline-block text-sm text-temple-green font-medium hover:underline"
                 >
                   立即報名 ›
                 </Link>

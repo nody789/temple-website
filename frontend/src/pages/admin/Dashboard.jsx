@@ -25,7 +25,7 @@ export default function Dashboard() {
     { label: '輪播張數', value: stats.carousel, to: '/admin/carousel', icon: '🖼️', color: 'bg-blue-500' },
     { label: '消息則數', value: stats.news, to: '/admin/news', icon: '📰', color: 'bg-green-500' },
     { label: '活動場次', value: stats.activities, to: '/admin/activities', icon: '📅', color: 'bg-purple-500' },
-    { label: '報名總數', value: stats.registrations, to: '/admin/registrations', icon: '📋', color: 'bg-temple-red' },
+    { label: '報名總數', value: stats.registrations, to: '/admin/registrations', icon: '📋', color: 'bg-temple-green' },
   ];
 
   return (
@@ -65,7 +65,7 @@ export default function Dashboard() {
             <Link
               key={item.to}
               to={item.to}
-              className="flex items-start gap-3 p-3 border border-gray-200 rounded hover:border-temple-red/40 hover:bg-red-50/30 transition-colors"
+              className="flex items-start gap-3 p-3 border border-gray-200 rounded hover:border-temple-green/40 hover:bg-green-50/30 transition-colors"
             >
               <span className="text-xl mt-0.5">{item.icon}</span>
               <div>

@@ -13,7 +13,7 @@ export default function About() {
     <main className="max-w-5xl mx-auto px-4 py-12">
       {/* 頁面標題 */}
       <div className="text-center mb-12">
-        <h1 className="font-serif text-3xl text-temple-red-dark mb-2">本廟簡介</h1>
+        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">本廟簡介</h1>
         <div className="flex items-center justify-center gap-3">
           <div className="w-16 h-0.5 bg-temple-gold" />
           <span className="text-temple-gold text-xl">❖</span>
@@ -37,7 +37,7 @@ export default function About() {
 
       {/* 簡介文字 */}
       <section className="temple-card p-6 md:p-8 mb-8">
-        <h2 className="font-serif text-xl text-temple-red mb-4 border-b border-temple-gold/30 pb-2">
+        <h2 className="font-serif text-xl text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
           廟宇歷史
         </h2>
         <p className="text-gray-700 leading-relaxed text-justify whitespace-pre-line">
@@ -47,7 +47,7 @@ export default function About() {
 
       {/* 基本資訊 */}
       <section className="temple-card p-6 md:p-8 mb-8">
-        <h2 className="font-serif text-xl text-temple-red mb-4 border-b border-temple-gold/30 pb-2">
+        <h2 className="font-serif text-xl text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
           基本資訊
         </h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -60,7 +60,7 @@ export default function About() {
             { label: '電話', value: settings.phone },
           ].map(({ label, value }) => (
             <div key={label} className="flex gap-2">
-              <dt className="shrink-0 text-sm font-medium text-temple-red-dark w-20">{label}</dt>
+              <dt className="shrink-0 text-sm font-medium text-temple-green-dark w-20">{label}</dt>
               <dd className="text-sm text-gray-700">{value || '—'}</dd>
             </div>
           ))}
@@ -69,7 +69,7 @@ export default function About() {
 
       {/* 入廟須知 */}
       <section className="temple-card p-6 md:p-8">
-        <h2 className="font-serif text-xl text-temple-red mb-4 border-b border-temple-gold/30 pb-2">
+        <h2 className="font-serif text-xl text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
           入廟須知
         </h2>
         <ul className="space-y-2 text-sm text-gray-700">

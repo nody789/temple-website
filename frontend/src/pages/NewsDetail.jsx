@@ -21,12 +21,12 @@ export default function NewsDetail() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-12">
-      <Link to="/news" className="text-sm text-temple-red hover:underline mb-6 inline-block">
+      <Link to="/news" className="text-sm text-temple-green hover:underline mb-6 inline-block">
         ‹ 返回消息列表
       </Link>
 
       <article className="temple-card p-6 md:p-8">
-        <div className="text-xs text-temple-red mb-2">
+        <div className="text-xs text-temple-green mb-2">
           {new Date(item.published_at).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
         <h1 className="font-serif text-2xl text-temple-dark mb-4 border-b border-temple-gold/30 pb-4">

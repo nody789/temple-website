@@ -8,6 +8,7 @@ import NewsDetail from './pages/NewsDetail';
 import Activities from './pages/Activities';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
+import Environment from './pages/Environment';
 import AdminLogin from './pages/admin/Login';
 import AdminLayout from './components/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
@@ -37,6 +38,7 @@ function App() {
         <Route path="/news" element={<><Navbar /><News /><Footer /></>} />
         <Route path="/news/:id" element={<><Navbar /><NewsDetail /><Footer /></>} />
         <Route path="/activities" element={<><Navbar /><Activities /><Footer /></>} />
+        <Route path="/environment" element={<><Navbar /><Environment /><Footer /></>} />
         <Route path="/register" element={<><Navbar /><Register /><Footer /></>} />
         <Route path="/contact" element={<><Navbar /><Contact /><Footer /></>} />
 
