@@ -15,17 +15,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 回應攔截器：如果 token 過期（401），自動登出
+// 回應攔截器：如果 token 過期（401），觸發登出事件
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      // 如果不在登入頁，跳轉到登入頁
-      if (!window.location.pathname.includes('/admin/login')) {
-        window.location.href = '/admin/login';
-      }
+      window.dispatchEvent(new Event('auth:logout'));
     }
     return Promise.reject(err);
   }

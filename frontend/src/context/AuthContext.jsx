@@ -1,12 +1,37 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-// 建立一個「登入狀態」的共享資料容器
-// 這樣任何子元件都可以讀取/修改登入狀態，不需要一層一層傳 props
 const AuthContext = createContext(null);
 
+function isTokenValid(token) {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}
+
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [token, setToken] = useState(() => {
+    const stored = localStorage.getItem('token');
+    if (!isTokenValid(stored)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      return null;
+    }
+    return stored;
+  });
   const [username, setUsername] = useState(() => localStorage.getItem('username'));
+
+  useEffect(() => {
+    const handleForceLogout = () => {
+      logout();
+    };
+    window.addEventListener('auth:logout', handleForceLogout);
+    return () => window.removeEventListener('auth:logout', handleForceLogout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = (newToken, newUsername) => {
     localStorage.setItem('token', newToken);
