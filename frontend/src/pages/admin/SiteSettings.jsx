@@ -12,10 +12,12 @@ export default function SiteSettings() {
     address: '',
     open_hours: '',
     about_text: '',
+    intro_video_url: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
+  const [videoUploading, setVideoUploading] = useState(false);
   const [oldPwd, setOldPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [pwdMsg, setPwdMsg] = useState(null);
@@ -103,6 +105,50 @@ export default function SiteSettings() {
             rows={6}
             placeholder="廟宇的歷史背景與介紹..."
           />
+        </div>
+
+        <h4 className="font-medium text-gray-600 text-sm border-b border-gray-100 pb-1 pt-2">建廟過程影片</h4>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            影片網址（留空則不顯示影片區塊）
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={settings.intro_video_url || ''}
+              onChange={(e) => setSettings({ ...settings, intro_video_url: e.target.value })}
+              className={`${inputClass} flex-1`}
+              placeholder="貼上 YouTube 網址，或上傳影片後自動填入"
+            />
+            <label className="shrink-0 cursor-pointer bg-gray-100 border border-gray-300 text-gray-600 text-xs px-3 py-2 rounded hover:bg-gray-200 flex items-center">
+              {videoUploading ? '上傳中...' : '上傳影片'}
+              <input
+                type="file"
+                accept=".mp4,.webm,.mov"
+                className="hidden"
+                disabled={videoUploading}
+                onChange={async (e) => {
+                  const file = e.target.files[0];
+                  if (!file) return;
+                  setVideoUploading(true);
+                  try {
+                    const form = new FormData();
+                    form.append('image', file);
+                    const r = await api.post('/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+                    setSettings((prev) => ({ ...prev, intro_video_url: r.data.url }));
+                  } catch {
+                    alert('影片上傳失敗');
+                  } finally {
+                    setVideoUploading(false);
+                    e.target.value = '';
+                  }
+                }}
+              />
+            </label>
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            支援 YouTube 網址 或 直接上傳 MP4 / WebM / MOV（最大 200MB）。
+          </p>
         </div>
 
         <button type="submit" disabled={saving} className="bg-temple-green text-white px-6 py-2 text-sm rounded hover:bg-temple-green-dark disabled:opacity-60">

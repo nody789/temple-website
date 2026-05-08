@@ -1,45 +1,38 @@
 # 待辦事項
 
-## 資料庫遷移：SQLite → MariaDB
+## 正式上線後資料備份
 
-### 本機準備
-- [ ] Navicat 建立資料庫 `temple_db`（utf8mb4_unicode_ci）
-- [ ] 確認本機 MariaDB 帳號密碼（root / ?）
+### 資料庫（Neon PostgreSQL）
+- [ ] Neon 免費版內建 **7 天自動備份**，無需額外設定
+- [ ] 重要資料更新前，手動到 Neon Dashboard → Branches → Restore 確認快照存在
+- [ ] 若需完整備份，在本機執行：
+  ```
+  pg_dump "你的 DATABASE_URL" > backup_YYYYMMDD.sql
+  ```
+  並將 .sql 檔存到 Google Drive / 隨身碟
 
-### 程式碼修改
-- [ ] `backend/package.json` — 新增 `mysql2`，移除 `better-sqlite3`
-- [ ] `backend/.env` — 新增 MariaDB 連線設定（DB_HOST / DB_USER / DB_PASS / DB_NAME）
-- [ ] `backend/db.js` — 改成 mysql2 連線池，自動建表語法移過來
-- [ ] `backend/routes/auth.js` — 查詢改 async/await
-- [ ] `backend/routes/carousel.js` — 查詢改 async/await
-- [ ] `backend/routes/news.js` — 查詢改 async/await
-- [ ] `backend/routes/activities.js` — 查詢改 async/await
-- [ ] `backend/routes/registration.js` — 查詢改 async/await
-- [ ] `backend/routes/settings.js` — 查詢改 async/await
-
-### 測試
-- [ ] 本機啟動後端，確認自動建表成功
-- [ ] 測試登入 / 登出
-- [ ] 測試各功能 CRUD（消息、活動、報名、輪播、設定）
+### 圖片（Cloudinary）
+- [ ] Cloudinary 圖片永久儲存，不會自動刪除，無需額外備份
+- [ ] 若需備份，至 Cloudinary Dashboard → Media Library → 全選 → Download ZIP
 
 ---
 
-## 圖片儲存：本機 → Cloudinary
+## 填入環境變數憑證（本機開發）
 
-> Railway 重新部署會清空 `backend/uploads/`，需改用雲端儲存
-
-- [ ] 申請 Cloudinary 免費帳號（25GB 免費）
-- [ ] `backend/.env` — 新增 Cloudinary 設定（CLOUD_NAME / API_KEY / API_SECRET）
-- [ ] `backend/routes/upload.js` — 改用 Cloudinary SDK 上傳
-- [ ] 前端圖片 URL 改為 Cloudinary 網址格式
-- [ ] 測試圖片上傳 / 顯示
+- [ ] `backend/.env` — 將 `DATABASE_URL` 改為本機 PostgreSQL 連線字串
+  - 範例：`postgresql://postgres:你的密碼@localhost:5432/temple_db`
+  - 需先在 PostgreSQL 建立資料庫 `temple_db`
+- [ ] `backend/.env` — 至 [cloudinary.com](https://cloudinary.com) 申請免費帳號，填入：
+  - `CLOUDINARY_CLOUD_NAME`
+  - `CLOUDINARY_API_KEY`
+  - `CLOUDINARY_API_SECRET`
 
 ---
 
 ## 正式上線
 
-- [ ] Railway 後台新增 MySQL Plugin
-- [ ] Railway 環境變數填入 DB 連線資訊 + JWT_SECRET（換強密碼）
+- [ ] Railway 後台新增 PostgreSQL Plugin
+- [ ] Railway 環境變數填入 `DATABASE_URL`（Railway 自動提供）+ `JWT_SECRET`（換強密碼）+ Cloudinary 三個變數
 - [ ] `backend/server.js` — 新增服務前端靜態檔案的程式碼（見 HOSTING_GUIDE.md）
 - [ ] 本機執行 `cd frontend && npm run build`
 - [ ] 推送到 GitHub，Railway 自動部署

@@ -1,6 +1,22 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
 
+function getVideoType(url) {
+  if (!url) return null;
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+  if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return 'direct';
+  return null;
+}
+
+function toYouTubeEmbed(url) {
+  if (url.includes('youtube.com/embed/')) return url;
+  const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+  if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+  const watchMatch = url.match(/[?&]v=([^?&]+)/);
+  if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  return url;
+}
+
 export default function About() {
   const [settings, setSettings] = useState({});
 
@@ -34,6 +50,33 @@ export default function About() {
           className="w-full h-56 object-cover rounded-sm shadow-md border-2 border-temple-gold/30"
         />
       </div>
+
+      {/* 建廟過程影片（有填網址才顯示） */}
+      {getVideoType(settings.intro_video_url) && (
+        <section className="temple-card p-6 md:p-8 mb-8">
+          <h2 className="font-serif text-xl text-temple-green mb-4 border-b border-temple-gold/30 pb-2">
+            建廟過程
+          </h2>
+          <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+            {getVideoType(settings.intro_video_url) === 'youtube' ? (
+              <iframe
+                className="absolute inset-0 w-full h-full rounded-sm"
+                src={toYouTubeEmbed(settings.intro_video_url)}
+                title="建廟過程影片"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                className="absolute inset-0 w-full h-full rounded-sm"
+                src={settings.intro_video_url}
+                controls
+                preload="metadata"
+              />
+            )}
+          </div>
+        </section>
+      )}
 
       {/* 簡介文字 */}
       <section className="temple-card p-6 md:p-8 mb-8">

@@ -1,6 +1,6 @@
 # 公廟網站
 
-全端專案，前台使用 React + Vite + Tailwind CSS，後台 API 使用 Node.js + Express + SQLite。
+全端專案，前台使用 React + Vite + Tailwind CSS，後台 API 使用 Node.js + Express + PostgreSQL（Neon），圖片與影片儲存使用 Cloudinary。
 
 ---
 
@@ -26,18 +26,25 @@ cd temple-website
 npm run install:all
 ```
 
-> 這會同時安裝 `backend/` 和 `frontend/` 的套件。
-
 ### 3. 設定後端環境變數
 
-在 `backend/` 資料夾建立 `.env` 檔案：
+在 `backend/` 資料夾建立 `.env` 檔案（參考 `.env.example`）：
 
 ```
 PORT=3001
-JWT_SECRET=temple-secret-key-change-this-in-production
+JWT_SECRET=請換成安全的隨機字串
+
+# PostgreSQL（建議使用 Neon 免費雲端：neon.tech）
+DATABASE_URL=postgresql://用戶名:密碼@主機/資料庫名?sslmode=require
+
+# Cloudinary（至 cloudinary.com 申請免費帳號）
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-> 正式上線時請將 `JWT_SECRET` 換成安全的隨機字串。
+> **DATABASE_URL** 直接從 Neon Dashboard 複製「Connection String」貼上即可。
+> **Cloudinary** 三個值在 cloudinary.com → Settings → API Keys。
 
 ### 4. 啟動專案（需開兩個終端機視窗）
 
@@ -45,7 +52,7 @@ JWT_SECRET=temple-secret-key-change-this-in-production
 ```bash
 npm run dev:backend
 ```
-後端會在 http://localhost:3001 執行
+後端會在 http://localhost:3001 執行，**首次啟動會自動建立所有資料表及示範資料**。
 
 **終端機 2 — 前端：**
 ```bash
@@ -72,18 +79,18 @@ npm run dev:frontend
 
 ### 前台
 - 首頁：輪播圖、廟宇簡介、最新消息、活動、報名入口
-- 本廟簡介：廟宇介紹、入廟須知
+- 本廟簡介：廟宇介紹、建廟過程影片（可在後台設定）、入廟須知
 - 最新消息：公告清單與詳細內容
 - 活動訊息：活動列表
 - 線上報名：線上報名表格
-- 聯絡我們：地址、電話、地圖
+- 聯絡我們：地址、電話
 
 ### 後台（需登入）
 - 輪播管理：上傳 / 刪除 / 排序首頁輪播圖片
 - 消息管理：新增 / 編輯 / 刪除最新消息
 - 活動管理：新增 / 編輯 / 刪除活動
 - 報名記錄：查看所有線上報名，可更改審核狀態
-- 網站設定：修改廟名、電話、地址、簡介文字及管理員密碼
+- 網站設定：修改廟名、電話、地址、簡介文字、建廟過程影片、管理員密碼
 
 ---
 
@@ -95,8 +102,7 @@ temple-website/
 ├── backend/              ← Node.js + Express API
 │   ├── routes/           ← 各功能的 API 路由
 │   ├── middleware/       ← 登入驗證
-│   ├── uploads/          ← 上傳圖片存放位置
-│   ├── db.js             ← SQLite 資料庫設定
+│   ├── db.js             ← PostgreSQL 連線與資料庫初始化
 │   ├── server.js         ← 伺服器主程式
 │   └── .env              ← 環境變數（不進 git）
 └── frontend/             ← React + Vite + Tailwind
@@ -109,11 +115,14 @@ temple-website/
 
 ---
 
-## 資料庫
+## 資料庫與儲存
 
-- 使用 SQLite，檔案位置：`backend/temple.db`
-- **首次啟動後端會自動建立**所有資料表及範例資料，無需手動設定
-- 可用 [Navicat Premium Lite](https://www.navicat.com/en/products/navicat-premium-lite)（免費）開啟 `.db` 檔案查看資料
+| 類型 | 服務 | 說明 |
+|------|------|------|
+| 資料庫 | [Neon](https://neon.tech)（PostgreSQL） | 免費版 500MB，內建 7 天自動備份 |
+| 圖片 / 影片 | [Cloudinary](https://cloudinary.com) | 免費版 25GB，永久儲存 |
+
+首次啟動後端會自動建立所有資料表，無需手動執行 SQL。
 
 ---
 

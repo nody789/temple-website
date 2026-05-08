@@ -8,7 +8,6 @@ export default defineConfig({
     // 把 /api 的請求轉發到後端，這樣前端不需要寫完整網址
     proxy: {
       '/api': 'http://localhost:3001',
-      '/uploads': 'http://localhost:3001',
     },
   },
 });
