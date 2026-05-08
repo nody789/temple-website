@@ -1,13 +1,15 @@
-# 廟宇網站上線流程指南（草稿，勿 commit）
+# 廟宇網站上線流程指南
 
 ---
 
-## 費用總覽（一年大約多少錢）
+## 費用總覽（每年大約多少錢）
 
 | 項目 | 費用 | 備注 |
 |------|------|------|
 | `.org.tw` 網域 | NT$350–500 / 年 | 向網路中文申請，需法人文件 |
 | 主機（Railway） | NT$1,920 / 年（$5 美元/月） | 跑 Node.js，無需管 Linux |
+| 資料庫（Neon） | **免費** | PostgreSQL 雲端，500MB 免費額度 |
+| 圖片／影片（Cloudinary） | **免費** | 25GB 免費，永久儲存 |
 | SSL 憑證 | **免費** | Railway 自動處理 |
 | **每年合計** | **約 NT$2,300–2,400 / 年** | |
 
@@ -15,16 +17,17 @@
 
 ---
 
-## 你的架構說明
+## 架構說明
 
 ```
-現在開發中：
-  瀏覽器 → Vite (port 5173) → Vite proxy → Node.js (port 3001)
+本機開發中：
+  瀏覽器 → Vite (port 5173) → proxy → Node.js (port 3001) → Neon DB
+                                                            → Cloudinary（圖片／影片）
 
-上線後：
-  瀏覽器 → https://廟名.org.tw
-         ├─ /api/*  → Railway 跑的 Node.js
-         └─ 其他    → React 靜態檔案（build 出來的 dist/）
+正式上線後：
+  瀏覽器 → https://廟名.org.tw（Railway）
+         ├─ /api/*  → Node.js 處理（讀寫 Neon DB、Cloudinary）
+         └─ 其他    → React 靜態檔案（frontend/dist/）
 ```
 
 **前端程式碼不需要改**：`frontend/src/api/index.js` 的 `baseURL: '/api'` 上線後繼續有效。
@@ -33,7 +36,7 @@
 
 ## 完整上線步驟（照順序做）
 
-### 階段一：向廟方收集資料（你的工作）
+### 階段一：向廟方收集資料
 
 - [ ] 請廟方提供：
   - 財團法人登記證書（影本即可）
@@ -45,55 +48,29 @@
 
 ### 階段二：申請網域（約 10–20 分鐘）
 
-1. 前往 **網路中文 Netchinese**（網址請自行搜尋 netchinese.com）
-2. 搜尋想要的 `.org.tw` 網域名稱，例如 `xxtemple.org.tw`
-3. 填寫 registrant（申請人）資料：**填法人資料，不是你個人**
-4. 上傳財團法人登記證書（.org.tw 需要審核）
+1. 前往 **網路中文 Netchinese**（搜尋 netchinese.com）
+2. 搜尋想要的 `.org.tw` 網域，例如 `xxtemple.org.tw`
+3. 填寫申請人資料：**填廟方法人資料，不是個人**
+4. 上傳財團法人登記證書（`.org.tw` 需人工審核）
 5. 付款（年費約 NT$350–500）
 6. 等待審核通過（通常 1–3 個工作天）
 
-> 帳號可以你自己建，但申請人欄位一定要填廟方法人資料。
-
 ---
 
-### 階段三：準備程式碼上線（你的工作）
+### 階段三：準備 Railway 上的環境變數
 
-**修改 backend/.env（上線前必做）：**
+上線前在 Railway 後台設定以下環境變數（Settings → Variables）：
 
-```env
-PORT=3001
-JWT_SECRET=請換成至少32字元的隨機字串，例如：k9x$mP2#qL8vN5wR7jT0aZ3eB6hC1dF4
-```
+| 變數名稱 | 說明 | 範例 |
+|---------|------|------|
+| `JWT_SECRET` | 至少 32 字元的隨機字串 | `k9x$mP2#qL8vN5wR7jT0aZ3eB6hC1dF4` |
+| `DATABASE_URL` | 從 Neon Dashboard 複製 Connection String | `postgresql://...@neon.tech/neondb?sslmode=require` |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary Dashboard 的 Cloud name | `ddo3uxgeh` |
+| `CLOUDINARY_API_KEY` | Cloudinary API Key | `996496...` |
+| `CLOUDINARY_API_SECRET` | Cloudinary API Secret | `Ls3La3...` |
+| `NODE_ENV` | 正式環境標記 | `production` |
 
-> 目前 JWT_SECRET 是 `temple-secret-key-change-this-in-production`，
-> 上線前一定要換掉，否則任何人都可以偽造登入 token。
-
-**建立 Railway 設定檔（`railway.json`，放在專案根目錄）：**
-
-```json
-{
-  "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "startCommand": "node backend/server.js",
-    "restartPolicyType": "ON_FAILURE"
-  }
-}
-```
-
-**前端 build 設定（讓 Node.js 同時服務前端靜態檔案）：**
-
-在 `backend/server.js` 最下方 `app.listen` 之前加入：
-
-```js
-// 上線時服務前端靜態檔案
-const frontendDist = path.join(__dirname, '../frontend/dist');
-app.use(express.static(frontendDist));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendDist, 'index.html'));
-});
-```
+> ⚠️ **JWT_SECRET 一定要換**，目前預設值任何人都可以偽造登入 token。
 
 ---
 
@@ -102,29 +79,18 @@ app.get('*', (req, res) => {
 1. 前往 **railway.app**，用 GitHub 帳號登入
 2. 點「New Project」→「Deploy from GitHub repo」
 3. 選擇這個專案的 repo
-4. Railway 偵測到 Node.js 會自動部署
-5. 部署完成後，點「Settings」→「Networking」→「Generate Domain」
-   - 先取得暫時網址，例如 `temple-abc123.up.railway.app`
-6. 在 Railway 後台設定環境變數（把 .env 的內容填進去）：
-   - `PORT` = `3001`
-   - `JWT_SECRET` = （你改好的強密碼）
+4. Railway 會讀取 `railway.json`，自動執行：
+   - **Build**：`npm run build`（安裝套件 + 建立 `frontend/dist/`）
+   - **Start**：`node backend/server.js`
+5. 在 Railway 後台 → Settings → Variables，填入階段三的所有環境變數
+6. 重新部署（Redeploy）
+7. 點「Settings」→「Networking」→「Generate Domain」，取得暫時網址確認能正常存取
+
+> Railway 偵測到的 `DATABASE_URL` 可直接從 Neon Dashboard 的 Connection Details 頁面複製「Connection string」。
 
 ---
 
-### 階段五：部署前端（在 Railway 之前先 build）
-
-在本機執行：
-
-```bash
-cd frontend
-npm run build
-```
-
-這會產生 `frontend/dist/` 資料夾，Railway 部署時會一起上傳。
-
----
-
-### 階段六：綁定網域（網路中文 + Railway）
+### 階段五：綁定自訂網域
 
 1. **Railway 這邊**：
    - Settings → Networking → Custom Domain
@@ -132,28 +98,27 @@ npm run build
    - Railway 會給你一個 CNAME 目標，例如 `xxxxxxx.railway.app`
 
 2. **網路中文這邊**：
-   - 進入網域管理後台
-   - 找到 DNS 設定
+   - 進入網域管理後台 → DNS 設定
    - 新增一筆 CNAME record：
      ```
-     主機名稱：@（或空白，代表根網域）
-     指向：Railway 給你的 CNAME 位址
+     主機名稱：@（代表根網域）
+     指向：Railway 給的 CNAME 位址
      TTL：3600
      ```
 
 3. 等待 DNS 生效（約 5 分鐘–24 小時）
-
 4. Railway 自動啟用 HTTPS（免費 SSL）
 
 ---
 
-### 階段七：驗收上線
+### 階段六：驗收上線
 
 - [ ] 用手機和電腦分別開啟網站，確認畫面正常
-- [ ] 測試前台：輪播圖、最新消息、活動列表、線上報名
-- [ ] 測試後台：`https://廟名.org.tw/admin/login` 能否登入
-- [ ] 確認圖片能正常顯示（上傳功能）
-- [ ] 確認 HTTPS 鎖頭出現（綠色安全連線）
+- [ ] 前台：輪播圖、最新消息、活動列表、線上報名
+- [ ] 後台：`https://廟名.org.tw/admin/login` 能否登入
+- [ ] 確認圖片可以正常上傳與顯示（Cloudinary）
+- [ ] 確認 HTTPS 鎖頭出現
+- [ ] 登入後到「網站設定」更改管理員密碼
 
 ---
 
@@ -163,14 +128,22 @@ npm run build
 `.org.tw` 需要人工審核財團法人文件，通常 1–3 個工作天。
 
 **Q：Railway 免費嗎？**
-有免費額度（每月 $5 美元的用量），低流量廟宇網站可能夠用，但建議直接付費方案（$5/月）確保穩定不中斷。
+有免費額度，但低流量網站可能不夠穩定。建議直接使用付費方案（$5 美元/月）確保不中斷。
 
-**Q：資料庫是 SQLite，上線會有問題嗎？**
-SQLite 是存在本機檔案的資料庫。Railway 每次重新部署可能會重置，建議上線前確認資料庫路徑，或考慮改用 Railway 提供的 PostgreSQL（免費額度內）。
+**Q：資料庫怎麼備份？**
+使用 Neon 免費版，內建 **7 天自動備份**，無需額外設定。需要手動備份時，在本機執行：
+```bash
+pg_dump "你的 DATABASE_URL" > backup_YYYYMMDD.sql
+```
 
-**Q：上傳的圖片怎麼辦？**
-目前圖片存在 `backend/uploads/` 資料夾，Railway 重新部署會清空。
-上線前需要考慮改用雲端儲存（如 Cloudinary 免費方案），這部分需要額外開發。
+**Q：圖片和影片怎麼備份？**
+Cloudinary 永久儲存，不會因為重新部署而消失。需要備份時，至 Cloudinary Dashboard → Media Library → 全選 → Download ZIP。
+
+**Q：重新部署會清掉資料嗎？**
+不會。資料存在 Neon（雲端 PostgreSQL），圖片存在 Cloudinary，兩者都獨立於 Railway，重新部署不影響任何資料。
+
+**Q：如何更換建廟過程影片？**
+後台 → 網站設定 → 建廟過程影片，貼上新的 YouTube 網址或重新上傳影片即可。
 
 ---
 
@@ -180,8 +153,4 @@ SQLite 是存在本機檔案的資料庫。Railway 每次重新部署可能會�
 |------|----------|
 | **你（開發者）** | 程式修改、Railway 部署、DNS 設定協助 |
 | **廟方法人代表** | 提供法人文件、簽名申請網域、付款授權 |
-| **網路中文客服** | .org.tw 審核問題（電話或線上客服） |
-
----
-
-*本文件為開發參考用，確認架站方向後請刪除。*
+| **網路中文客服** | `.org.tw` 審核問題（電話或線上客服） |
