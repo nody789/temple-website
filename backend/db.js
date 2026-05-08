@@ -88,14 +88,14 @@ async function initDb() {
 
     // 預設網站設定
     const defaults = [
-      ['site_name', '玄天上帝廟'],
+      ['site_name', '南天母中壇元帥道場'],
       ['site_subtitle', '神恩浩蕩，庇佑四方'],
       ['phone', '02-XXXX-XXXX'],
       ['address', '台灣某市某區某路一號'],
       ['email', 'temple@example.com'],
-      ['about_text', '本廟創建於民國XX年，主祀玄天上帝，香火鼎盛，信眾廣布四方。每逢神明誕辰，廟宇熱鬧非凡，為地方重要信仰中心。廟方長期致力於推廣傳統文化，舉辦各類宗教活動，促進社區凝聚力。'],
+      ['about_text', '本廟創建於民國XX年，主祀中壇元帥，香火鼎盛，信眾廣布四方。每逢神明誕辰，廟宇熱鬧非凡，為地方重要信仰中心。廟方長期致力於推廣傳統文化，舉辦各類宗教活動，促進社區凝聚力。'],
       ['founding_year', '民國XX年'],
-      ['main_deity', '玄天上帝'],
+      ['main_deity', '中壇元帥'],
       ['open_hours', '每日上午 06:00 - 晚上 09:00'],
       ['intro_video_url', ''],
     ];

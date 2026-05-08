@@ -5,7 +5,7 @@ import api from '../api';
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [siteName, setSiteName] = useState('玄天上帝廟');
+  const [siteName, setSiteName] = useState('南天母中壇元帥道場');
   const location = useLocation();
 
   // 讀取網站名稱

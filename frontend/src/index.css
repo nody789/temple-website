@@ -6,7 +6,7 @@
 body {
   font-family: 'Noto Sans TC', sans-serif;
   background-color: #F9F7F4;
-  color: #1A2E0E;
+  color: #1A1200;
 }
 
 /* 廟宇風格的標題裝飾 */
@@ -53,4 +53,4 @@ body {
 /* 捲軸美化 */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #2E6B1A; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #9A6E00; border-radius: 3px; }

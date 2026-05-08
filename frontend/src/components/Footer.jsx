@@ -18,7 +18,7 @@ export default function Footer() {
         {/* 廟宇名稱 */}
         <div>
           <h3 className="font-serif text-xl font-bold text-temple-gold mb-3">
-            {settings.site_name || '玄天上帝廟'}
+            {settings.site_name || '南天母中壇元帥道場'}
           </h3>
           <p className="text-white/60 text-sm leading-relaxed">
             {settings.site_subtitle || '神恩浩蕩，庇佑四方'}
@@ -79,7 +79,7 @@ export default function Footer() {
 
       {/* 版權列 */}
       <div className="border-t border-white/10 py-4 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} {settings.site_name || '玄天上帝廟'} 版權所有 ·{' '}
+        © {new Date().getFullYear()} {settings.site_name || '南天母中壇元帥道場'} 版權所有 ·{' '}
         <Link to="/admin/login" className="hover:text-white/60 transition-colors">
           後台管理
         </Link>
