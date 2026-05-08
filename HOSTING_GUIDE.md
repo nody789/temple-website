@@ -34,6 +34,84 @@
 
 ---
 
+## 暫時預覽部署（Render 免費版）
+
+> 適用情境：廟方資料還沒拿到、還不能申請網域，但需要先讓別人看到網站。
+> 完全免費、不需要信用卡，約 5 分鐘完成。
+
+### 前置條件確認（已完成）
+
+- [x] 程式碼已推到 GitHub（`nody789/temple-website`）
+- [x] Neon PostgreSQL 已設定（`DATABASE_URL` 已填入 `.env`）
+- [x] Cloudinary 已設定（圖片上傳功能可用）
+
+---
+
+### 步驟一：在 Render 建立服務
+
+1. 前往 **[render.com](https://render.com)**，用 GitHub 帳號登入
+2. 點右上角 **New +** → **Web Service**
+3. 選擇 `nody789/temple-website` → **Connect**
+
+---
+
+### 步驟二：填入基本設定
+
+| 欄位 | 填入的值 |
+|------|---------|
+| **Name** | `temple-website`（可自訂） |
+| **Environment** | `Node` |
+| **Build Command** | `npm run build` |
+| **Start Command** | `cd backend && node server.js` |
+| **Plan** | `Free` |
+
+---
+
+### 步驟三：加入環境變數
+
+在頁面下方 **Environment Variables** 區塊，逐一新增以下 6 個：
+
+| Key | Value |
+|-----|-------|
+| `NODE_ENV` | `production` |
+| `JWT_SECRET` | `jJNLexaXc397qoIyC4p8PlR1zvQMuBKTDYrOgGwhH5Wm20dU` |
+| `DATABASE_URL` | 貼上 `.env` 裡的 Neon 連線字串（postgresql://... 那串） |
+| `CLOUDINARY_CLOUD_NAME` | `ddo3uxgeh` |
+| `CLOUDINARY_API_KEY` | `996496426587827` |
+| `CLOUDINARY_API_SECRET` | 貼上 `.env` 裡的 `CLOUDINARY_API_SECRET` 值 |
+
+> **JWT_SECRET 說明**：上方的值是已重新產生的安全版本，請用這個，不要用 `.env` 裡的舊值。
+
+---
+
+### 步驟四：部署
+
+點 **Create Web Service**，等待 3–5 分鐘。
+
+---
+
+### 網址在哪裡看
+
+部署完成後，Render 頁面**右上角**會出現：
+
+```
+https://temple-website-xxxx.onrender.com
+```
+
+點那個連結就是公開的網站，可以直接把這個網址傳給別人。
+
+後台管理：`https://temple-website-xxxx.onrender.com/admin/login`
+
+---
+
+### 注意事項
+
+- **冷啟動**：Render 免費版閒置 15 分鐘後進入休眠，第一次訪問需等約 30 秒喚醒，之後正常。
+- **資料不會消失**：資料存在 Neon，重新部署或休眠都不影響資料。
+- **等正式上線再切換**：拿到廟方資料後，按下方「完整上線步驟」改用 Railway + 自訂網域。
+
+---
+
 ## 完整上線步驟（照順序做）
 
 ### 階段一：向廟方收集資料
