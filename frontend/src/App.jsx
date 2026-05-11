@@ -1,29 +1,77 @@
+/**
+ * 【檔案說明】App.jsx — 整個應用的路由總表
+ *
+ * 這個元件定義了「網址 URL 對應哪個頁面元件」的規則。
+ * 使用 react-router-dom 套件來管理前端路由（Single Page Application 的換頁機制）。
+ *
+ * 前端路由概念：
+ *   傳統網站換頁 → 瀏覽器向伺服器請求新的 HTML 頁面
+ *   SPA 前端路由 → 頁面不真正重新載入，React 根據 URL 切換要顯示的元件
+ *
+ * 結構分為兩大區塊：
+ *   1. 前台頁面（有 Navbar 導覽列 + Footer 頁尾）
+ *   2. 後台頁面（管理員介面，需要登入）
+ */
+
+// BrowserRouter：提供瀏覽器的 URL 歷史紀錄功能（HTML5 History API）
+// Routes：包住所有 <Route>，負責比對目前 URL 決定顯示哪個頁面
+// Route：定義一條路由規則，path 是網址，element 是對應的元件
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// 共用的導覽列（頂部選單）和頁尾元件
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Home from './pages/Home';
-import About from './pages/About';
-import News from './pages/News';
-import NewsDetail from './pages/NewsDetail';
-import Activities from './pages/Activities';
-import Register from './pages/Register';
-import Contact from './pages/Contact';
-import Environment from './pages/Environment';
-import AdminLogin from './pages/admin/Login';
-import AdminLayout from './components/admin/AdminLayout';
-import Dashboard from './pages/admin/Dashboard';
-import CarouselManager from './pages/admin/CarouselManager';
-import NewsManager from './pages/admin/NewsManager';
-import ActivitiesManager from './pages/admin/ActivitiesManager';
-import RegistrationList from './pages/admin/RegistrationList';
-import SiteSettings from './pages/admin/SiteSettings';
+
+// ===== 前台頁面元件 =====
+import Home from './pages/Home';             // 首頁
+import About from './pages/About';           // 本廟簡介
+import News from './pages/News';             // 最新消息列表
+import NewsDetail from './pages/NewsDetail'; // 單篇消息內容（動態路由 :id）
+import Activities from './pages/Activities'; // 活動訊息
+import Register from './pages/Register';     // 線上報名
+import Contact from './pages/Contact';       // 聯絡我們
+import Environment from './pages/Environment'; // 環境介紹
+
+// ===== 後台頁面元件 =====
+import AdminLogin from './pages/admin/Login';           // 後台登入頁
+import AdminLayout from './components/admin/AdminLayout'; // 後台整體版型（側欄 + 內容區）
+import Dashboard from './pages/admin/Dashboard';         // 後台首頁
+import CarouselManager from './pages/admin/CarouselManager';   // 輪播圖管理
+import NewsManager from './pages/admin/NewsManager';           // 消息管理
+import ActivitiesManager from './pages/admin/ActivitiesManager'; // 活動管理
+import RegistrationList from './pages/admin/RegistrationList';   // 報名記錄
+import SiteSettings from './pages/admin/SiteSettings';          // 網站設定
+
+// ProtectedRoute：路由守衛元件，未登入時自動跳轉到登入頁
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
+/**
+ * App 元件：定義全站路由規則
+ *
+ * React 元件命名規則：
+ *   - 必須大寫開頭（App、Home、Navbar）→ 才會被 React 當作元件處理
+ *   - 小寫開頭（div、span、button）→ 被視為原生 HTML 標籤
+ */
 function App() {
   return (
+    /**
+     * BrowserRouter：整個應用只需要一個，放在最外層
+     * 它讓 React 能夠偵測瀏覽器 URL 的變化並做出反應
+     */
     <BrowserRouter>
+      {/*
+        Routes：像一個「路由比對容器」
+        React Router 會從上到下比對 URL，找到符合的 Route 就渲染對應的 element
+      */}
       <Routes>
-        {/* 前台頁面：有 Navbar 和 Footer */}
+
+        {/* ==============================
+            前台頁面區域
+            每個頁面都包含 Navbar（上方導覽）和 Footer（下方頁尾）
+            <> ... </> 是 React Fragment，可以包住多個元件而不產生多餘的 DOM 節點
+        ============================== */}
+
+        {/* 首頁：網址為 / */}
         <Route
           path="/"
           element={
@@ -34,18 +82,44 @@ function App() {
             </>
           }
         />
+
+        {/* 本廟簡介：網址為 /about */}
         <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
+
+        {/* 最新消息列表：網址為 /news */}
         <Route path="/news" element={<><Navbar /><News /><Footer /></>} />
+
+        {/*
+          消息詳細頁面：網址為 /news/123（動態路由）
+          :id 是動態參數，實際值可在 NewsDetail 元件內用 useParams() 取得
+        */}
         <Route path="/news/:id" element={<><Navbar /><NewsDetail /><Footer /></>} />
+
+        {/* 活動訊息：網址為 /activities */}
         <Route path="/activities" element={<><Navbar /><Activities /><Footer /></>} />
+
+        {/* 環境介紹：網址為 /environment */}
         <Route path="/environment" element={<><Navbar /><Environment /><Footer /></>} />
+
+        {/* 線上報名：網址為 /register */}
         <Route path="/register" element={<><Navbar /><Register /><Footer /></>} />
+
+        {/* 聯絡我們：網址為 /contact */}
         <Route path="/contact" element={<><Navbar /><Contact /><Footer /></>} />
 
-        {/* 後台：登入頁 */}
+        {/* ==============================
+            後台頁面區域
+            後台不需要前台的 Navbar 和 Footer
+        ============================== */}
+
+        {/* 後台登入頁：網址為 /admin/login，不需要登入就能進入 */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* 後台：受保護的頁面（未登入會跳轉到登入頁）*/}
+        {/*
+          後台主要區域：網址為 /admin 及其子路由
+          用 ProtectedRoute 包住 → 未登入時會自動跳轉到 /admin/login
+          AdminLayout 提供側欄選單 + 頂部列的版型框架
+        */}
         <Route
           path="/admin"
           element={
@@ -54,16 +128,23 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="carousel" element={<CarouselManager />} />
-          <Route path="news" element={<NewsManager />} />
-          <Route path="activities" element={<ActivitiesManager />} />
-          <Route path="registrations" element={<RegistrationList />} />
-          <Route path="settings" element={<SiteSettings />} />
+          {/*
+            子路由（Nested Routes）：
+            這些路由的內容會渲染在 AdminLayout 裡的 <Outlet /> 位置
+            index 表示當 URL 剛好是 /admin 時顯示的預設頁面
+          */}
+          <Route index element={<Dashboard />} />                              {/* /admin */}
+          <Route path="carousel" element={<CarouselManager />} />              {/* /admin/carousel */}
+          <Route path="news" element={<NewsManager />} />                      {/* /admin/news */}
+          <Route path="activities" element={<ActivitiesManager />} />          {/* /admin/activities */}
+          <Route path="registrations" element={<RegistrationList />} />        {/* /admin/registrations */}
+          <Route path="settings" element={<SiteSettings />} />                 {/* /admin/settings */}
         </Route>
+
       </Routes>
     </BrowserRouter>
   );
 }
 
+// export default：讓其他檔案可以 import App from './App' 取用這個元件
 export default App;
