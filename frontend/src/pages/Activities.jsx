@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import SEOHead from '../components/SEOHead';
 
 export default function Activities() {
   const [activities, setActivities] = useState([]);
@@ -18,6 +19,7 @@ export default function Activities() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
+      <SEOHead title="活動訊息" />
       <div className="text-center mb-10">
         <h1 className="font-serif text-3xl text-temple-green-dark mb-2">活動訊息</h1>
         <div className="flex items-center justify-center gap-3">

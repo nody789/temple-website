@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
+import SEOHead from '../components/SEOHead';
 
 export default function NewsDetail() {
   const { id } = useParams();
@@ -21,13 +22,14 @@ export default function NewsDetail() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-12">
+      <SEOHead title={item.title} description={item.content?.slice(0, 120)} />
       <Link to="/news" className="text-sm text-temple-green hover:underline mb-6 inline-block">
         ‹ 返回消息列表
       </Link>
 
       <article className="temple-card p-6 md:p-8">
         <div className="text-xs text-temple-green mb-2">
-          {new Date(item.published_at).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}
+          {(() => { const [y,m,d] = String(item.published_at).slice(0,10).split('-'); return `${y} 年 ${parseInt(m)} 月 ${parseInt(d)} 日`; })()}
         </div>
         <h1 className="font-serif text-2xl text-temple-dark mb-4 border-b border-temple-gold/30 pb-4">
           {item.title}

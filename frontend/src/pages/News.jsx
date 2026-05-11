@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import SEOHead from '../components/SEOHead';
 
 export default function News() {
   const [news, setNews] = useState([]);
@@ -19,6 +20,7 @@ export default function News() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">
+      <SEOHead title="最新消息" />
       <div className="text-center mb-10">
         <h1 className="font-serif text-3xl text-temple-green-dark mb-2">最新消息</h1>
         <div className="flex items-center justify-center gap-3">

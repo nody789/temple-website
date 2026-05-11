@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import SEOHead from '../components/SEOHead';
 
 const areas = [
   {
@@ -40,6 +41,7 @@ export default function Environment() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
+      <SEOHead title="環境介紹" />
       {/* 頁面標題 */}
       <div className="text-center mb-12">
         <h1 className="font-serif text-3xl text-temple-green-dark mb-2">環境介紹</h1>

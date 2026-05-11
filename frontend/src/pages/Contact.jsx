@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import SEOHead from '../components/SEOHead';
 
 export default function Contact() {
   const settings = useSettings();
@@ -10,6 +11,7 @@ export default function Contact() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">
+      <SEOHead title="聯絡我們" />
       <div className="text-center mb-10">
         <h1 className="font-serif text-3xl text-temple-green-dark mb-2">聯絡我們</h1>
         <div className="flex items-center justify-center gap-3">

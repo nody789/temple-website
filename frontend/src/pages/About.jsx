@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import SEOHead from '../components/SEOHead';
 
 function getVideoType(url) {
   if (!url) return null;
@@ -26,6 +27,7 @@ export default function About() {
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
+      <SEOHead title="本廟簡介" />
       {/* 頁面標題 */}
       <div className="text-center mb-12">
         <h1 className="font-serif text-3xl text-temple-green-dark mb-2">本廟簡介</h1>

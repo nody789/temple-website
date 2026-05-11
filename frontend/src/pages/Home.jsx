@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeroSlider from '../components/HeroSlider';
 import api from '../api';
 import { useSettings } from '../context/SettingsContext';
+import SEOHead from '../components/SEOHead';
 
 export default function Home() {
   const settings = useSettings();
@@ -21,6 +22,7 @@ export default function Home() {
 
   return (
     <main>
+      <SEOHead />
       {/* 輪播 */}
       <HeroSlider />
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
+import SEOHead from '../components/SEOHead';
 
 export default function Register() {
   const [activities, setActivities] = useState([]);
@@ -69,6 +70,7 @@ export default function Register() {
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-12">
+      <SEOHead title="線上報名" />
 
       {/* ── 報名成功 Modal ── */}
       {status === 'success' && (
