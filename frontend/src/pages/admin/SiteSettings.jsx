@@ -17,6 +17,7 @@ export default function SiteSettings() {
     seo_title: '',
     meta_description: '',
     meta_keywords: '',
+    facebook_url: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -94,6 +95,7 @@ export default function SiteSettings() {
         <Field label="電子郵件" name="email" type="email" placeholder="temple@example.com" />
         <Field label="地址" name="address" placeholder="完整通訊地址" />
         <Field label="開放時間" name="open_hours" placeholder="例：每日 06:00 - 21:00" />
+        <Field label="Facebook 粉絲專頁網址" name="facebook_url" placeholder="例：https://www.facebook.com/yourpage" />
 
         <h4 className="font-medium text-gray-600 text-sm border-b border-gray-100 pb-1 pt-2">本廟簡介文字</h4>
         <div>
