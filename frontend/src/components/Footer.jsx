@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Footer() {
-  const [settings, setSettings] = useState({});
-
-  useEffect(() => {
-    api.get('/settings').then((res) => setSettings(res.data)).catch(() => {});
-  }, []);
+  const settings = useSettings();
 
   return (
     <footer className="bg-temple-dark text-white">

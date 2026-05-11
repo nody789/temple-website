@@ -41,10 +41,9 @@ export default function News() {
               className="temple-card p-5 flex gap-4 items-start hover:border-temple-gold/60 block"
             >
               <div className="shrink-0 w-16 text-center bg-temple-green text-white rounded-sm py-1.5">
-                <div className="text-xs leading-tight">{new Date(item.published_at).getFullYear()}</div>
+                <div className="text-xs leading-tight">{String(item.published_at).slice(0, 4)}</div>
                 <div className="text-lg font-bold leading-tight">
-                  {String(new Date(item.published_at).getMonth() + 1).padStart(2, '0')}/
-                  {String(new Date(item.published_at).getDate()).padStart(2, '0')}
+                  {String(item.published_at).slice(5, 7)}/{String(item.published_at).slice(8, 10)}
                 </div>
               </div>
               <div className="flex-1 min-w-0">

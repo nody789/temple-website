@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
-import api from '../api';
+import { useEffect } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Contact() {
-  const [settings, setSettings] = useState({});
+  const settings = useSettings();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    api.get('/settings').then((res) => setSettings(res.data)).catch(() => {});
   }, []);
 
   return (

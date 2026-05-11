@@ -6,12 +6,12 @@ export default {
       colors: {
         // 廟宇色系（亮金色主調）
         temple: {
-          green: '#9A6E00',
-          'green-dark': '#6B4A00',
-          'green-light': '#C49010',
-          gold: '#F0C030',
-          'gold-light': '#F8D848',
-          'gold-dark': '#C09808',
+          green: '#9A7200',
+          'green-dark': '#6B4D00',
+          'green-light': '#C49A00',
+          gold: '#EFBF04',
+          'gold-light': '#F5D040',
+          'gold-dark': '#C09600',
           cream: '#F9F7F4',
           'cream-dark': '#EFEBE4',
           dark: '#1A1200',

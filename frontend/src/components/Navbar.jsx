@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import api from '../api';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [siteName, setSiteName] = useState('南天母中壇元帥道場');
+  const settings = useSettings();
+  const siteName = settings.site_name || '南天母中壇元帥道場';
   const location = useLocation();
-
-  // 讀取網站名稱
-  useEffect(() => {
-    api.get('/settings').then((res) => {
-      if (res.data.site_name) setSiteName(res.data.site_name);
-    }).catch(() => {});
-  }, []);
 
   // 滾動時 navbar 加上背景陰影
   useEffect(() => {

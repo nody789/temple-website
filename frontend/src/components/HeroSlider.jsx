@@ -22,7 +22,7 @@ export default function HeroSlider() {
 
   if (slides.length === 0) {
     return (
-      <div className="w-full h-64 md:h-96 bg-temple-green/10 flex items-center justify-center">
+      <div className="w-full h-64 sm:h-80 md:h-[460px] lg:h-[560px] xl:h-[640px] bg-temple-green/10 flex items-center justify-center">
         <span className="text-temple-green/40 font-serif text-lg">載入中...</span>
       </div>
     );
@@ -31,7 +31,7 @@ export default function HeroSlider() {
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: 'clamp(240px, 50vw, 520px)' }}>
+    <div className="relative w-full overflow-hidden h-64 sm:h-80 md:h-[460px] lg:h-[560px] xl:h-[640px]">
       {/* 圖片 */}
       {slides.map((slide, idx) => (
         <div

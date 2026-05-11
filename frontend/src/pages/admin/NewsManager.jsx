@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../../api';
+import AdminToast from '../../components/admin/AdminToast';
 
 const emptyForm = { title: '', content: '', image_url: '', published_at: new Date().toISOString().split('T')[0], active: true };
 
@@ -79,11 +80,7 @@ export default function NewsManager() {
 
   return (
     <div className="space-y-6">
-      {msg && (
-        <div className={`p-3 rounded text-sm text-center ${msg.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-          {msg.text}
-        </div>
-      )}
+      <AdminToast msg={msg} />
 
       {/* 表單 */}
       <div className="bg-white rounded shadow-sm p-5">

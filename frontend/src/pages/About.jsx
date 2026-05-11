@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import api from '../api';
+import { useEffect } from 'react';
+import { useSettings } from '../context/SettingsContext';
 
 function getVideoType(url) {
   if (!url) return null;
@@ -18,10 +18,9 @@ function toYouTubeEmbed(url) {
 }
 
 export default function About() {
-  const [settings, setSettings] = useState({});
+  const settings = useSettings();
 
   useEffect(() => {
-    api.get('/settings').then((res) => setSettings(res.data)).catch(() => {});
     window.scrollTo(0, 0);
   }, []);
 

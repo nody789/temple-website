@@ -2,22 +2,21 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import HeroSlider from '../components/HeroSlider';
 import api from '../api';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Home() {
+  const settings = useSettings();
   const [news, setNews] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [settings, setSettings] = useState({});
 
   useEffect(() => {
     api.get('/news?limit=4').then((res) => setNews(res.data)).catch(() => {});
     api.get('/activities').then((res) => setActivities(res.data.slice(0, 3))).catch(() => {});
-    api.get('/settings').then((res) => setSettings(res.data)).catch(() => {});
   }, []);
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+    return String(dateStr).slice(0, 10).replace(/-/g, '/');
   };
 
   return (

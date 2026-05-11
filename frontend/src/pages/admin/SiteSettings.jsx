@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../../api';
+import AdminToast from '../../components/admin/AdminToast';
 
 export default function SiteSettings() {
   const [settings, setSettings] = useState({
@@ -13,6 +14,9 @@ export default function SiteSettings() {
     open_hours: '',
     about_text: '',
     intro_video_url: '',
+    seo_title: '',
+    meta_description: '',
+    meta_keywords: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -74,11 +78,7 @@ export default function SiteSettings() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      {msg && (
-        <div className={`p-3 rounded text-sm text-center ${msg.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-          {msg.text}
-        </div>
-      )}
+      <AdminToast msg={msg} />
 
       {/* 網站基本設定 */}
       <form onSubmit={handleSave} className="bg-white rounded shadow-sm p-5 space-y-4">
@@ -106,6 +106,33 @@ export default function SiteSettings() {
             placeholder="廟宇的歷史背景與介紹..."
           />
         </div>
+
+        <h4 className="font-medium text-gray-600 text-sm border-b border-gray-100 pb-1 pt-2">SEO 搜尋引擎設定</h4>
+        <Field
+          label="瀏覽器標題（SEO Title）"
+          name="seo_title"
+          placeholder="例：南天母中壇元帥道場 | 官方網站"
+        />
+        <p className="text-xs text-gray-400 -mt-3">留空時自動使用廟名。建議格式：廟名 | 官方網站</p>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            網站描述（Meta Description）
+            <span className="text-gray-400 font-normal ml-1">{(settings.meta_description || '').length}/160</span>
+          </label>
+          <textarea
+            value={settings.meta_description || ''}
+            onChange={(e) => setSettings({ ...settings, meta_description: e.target.value })}
+            className={`${inputClass} resize-none`}
+            rows={3}
+            maxLength={160}
+            placeholder="搜尋引擎結果頁顯示的網站說明，建議 50–160 字..."
+          />
+        </div>
+        <Field
+          label="關鍵字（Meta Keywords，以逗號分隔）"
+          name="meta_keywords"
+          placeholder="例：中壇元帥,三太子,廟宇,天母,台北"
+        />
 
         <h4 className="font-medium text-gray-600 text-sm border-b border-gray-100 pb-1 pt-2">建廟過程影片</h4>
         <div>
@@ -159,11 +186,7 @@ export default function SiteSettings() {
       {/* 更改密碼 */}
       <form onSubmit={handleChangePwd} className="bg-white rounded shadow-sm p-5 space-y-4">
         <h3 className="font-medium text-gray-700 border-b border-gray-200 pb-2">更改管理員密碼</h3>
-        {pwdMsg && (
-          <div className={`p-2 rounded text-sm ${pwdMsg.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-            {pwdMsg.text}
-          </div>
-        )}
+        <AdminToast msg={pwdMsg} />
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">舊密碼</label>
           <input type="password" value={oldPwd} onChange={(e) => setOldPwd(e.target.value)} className={inputClass} required />
