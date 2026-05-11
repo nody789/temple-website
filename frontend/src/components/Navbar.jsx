@@ -36,7 +36,7 @@ export default function Navbar() {
       }`}
     >
       {/* 頂部資訊列 */}
-      <div className="bg-temple-green-dark text-white text-sm py-1.5 px-4 text-center tracking-widest">
+      <div className="bg-temple-gold text-temple-dark text-sm py-1.5 px-4 text-center tracking-widest font-medium">
         虔誠信仰 · 傳承文化 · 守護平安
       </div>
 

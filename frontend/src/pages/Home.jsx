@@ -25,7 +25,7 @@ export default function Home() {
       <HeroSlider />
 
       {/* 裝飾標語 */}
-      <div className="bg-temple-green-dark text-white text-center py-4 px-4">
+      <div className="bg-temple-gold text-temple-dark text-center py-4 px-4">
         <p className="font-serif text-lg tracking-widest">
           ❖ {settings.site_subtitle || '神恩浩蕩，庇佑四方'} ❖
         </p>
