@@ -6,16 +6,16 @@ export default {
       colors: {
         // 廟宇色系（亮金色主調）
         temple: {
-          green: '#9A7200',
-          'green-dark': '#6B4D00',
-          'green-light': '#C49A00',
+          green: '#907300',
+          'green-dark': '#6C5600',
+          'green-light': '#BF9C00',
           gold: '#EFBF04',
           'gold-light': '#F5D040',
           'gold-dark': '#C09600',
           cream: '#F9F7F4',
           'cream-dark': '#EFEBE4',
-          dark: '#1A1200',
-          brown: '#7A5800',
+          dark: '#1A1400',
+          brown: '#907300',
         },
       },
       fontFamily: {
