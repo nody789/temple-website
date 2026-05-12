@@ -7,6 +7,11 @@
  *   - 提供左右箭頭按鈕手動切換
  *   - 底部顯示圓點指示目前是第幾張
  *
+ * 圖片顯示方式：
+ *   w-full h-auto — 圖片照原始比例顯示，不裁切、不變形
+ *   CSS grid 疊加 — 多張圖片堆疊在同一格，透過 opacity 淡入淡出切換
+ *   建議提供相同比例（橫幅，例如 1920×820）的圖片，確保切換時高度一致
+ *
  * 使用的 React Hooks：
  *   - useState：記錄目前顯示第幾張（current）和圖片列表（slides）
  *   - useEffect：掛載後發 API 請求、設定自動換頁計時器
@@ -42,11 +47,6 @@ export default function HeroSlider() {
 
   /**
    * useEffect：元件掛載後，向後端請求輪播圖片資料
-   *
-   * api.get('/carousel')：發送 GET /api/carousel 請求
-   * .then((res) => setSlides(res.data))：成功時把圖片陣列存入 slides 狀態
-   * .catch(() => {})：失敗時靜默忽略
-   *
    * 依賴陣列 []：只在掛載時執行一次
    */
   useEffect(() => {
@@ -65,7 +65,6 @@ export default function HeroSlider() {
    *   這樣 next 的函式參考就是穩定的，useEffect 才能正常運作。
    *
    * 邏輯：
-   *   setCurrent 接收一個 updater function，prev 是目前最新的 current 值
    *   (prev + 1) % slides.length：下一張索引，到最後一張後循環回第一張
    *   例如：slides.length = 3，current = 2 → (2+1) % 3 = 0（回到第一張）
    *
@@ -78,43 +77,20 @@ export default function HeroSlider() {
   /**
    * useEffect：設定自動換頁計時器
    *
-   * 依賴陣列 [next, slides.length]：
-   *   當 next 函式或圖片數量改變時，重新設定計時器
-   *
    * setInterval(next, 5000)：每 5000 毫秒（5 秒）呼叫一次 next
    * return () => clearInterval(timer)：
-   *   這是「清理函式」（cleanup function），在元件卸載或依賴改變時執行，
-   *   清除計時器，避免元件消失後仍繼續執行（記憶體洩漏）
+   *   清理函式，元件卸載或依賴改變時執行，避免記憶體洩漏
    */
   useEffect(() => {
-    // 只有一張圖（或沒圖）時不需要輪播
-    if (slides.length <= 1) return;
+    if (slides.length <= 1) return; // 只有一張圖不需要輪播
     const timer = setInterval(next, 5000);
-    return () => clearInterval(timer); // 元件卸載時清除計時器
+    return () => clearInterval(timer);
   }, [next, slides.length]);
 
-  /**
-   * 載入中狀態：slides 還是空陣列時，顯示佔位區塊
-   *
-   * 條件渲染（Conditional Rendering）：
-   *   元件可以根據狀態決定渲染什麼，甚至提早 return 不同的 JSX
-   *
-   * Tailwind class 說明：
-   *   w-full             → 寬度 100%
-   *   h-64               → 高度 256px（64 × 4px，Tailwind 以 4px 為單位）
-   *   sm:h-80            → 螢幕寬 ≥ 640px 時高度 320px（sm: 是響應式斷點前綴）
-   *   md:h-[460px]       → 螢幕寬 ≥ 768px 時高度 460px（方括號 = 任意值）
-   *   lg:h-[560px]       → 螢幕寬 ≥ 1024px 時高度 560px
-   *   xl:h-[640px]       → 螢幕寬 ≥ 1280px 時高度 640px
-   *   bg-temple-green/10 → 背景色 temple-green，透明度 10%（/ 後面是透明度）
-   *   flex               → 啟用 Flexbox 排版
-   *   items-center       → Flex 子元素在垂直方向置中
-   *   justify-center     → Flex 子元素在水平方向置中
-   */
+  // 載入中：顯示佔位高度，避免版面跳動
   if (slides.length === 0) {
     return (
-      // 高度與下方主體保持一致：手機 56vw（最小 260px），md 以上接近全螢幕
-      <div className="w-full h-[56vw] min-h-[260px] md:h-[calc(100vh-100px)] bg-temple-green/10 flex items-center justify-center">
+      <div className="w-full min-h-[260px] md:min-h-[460px] bg-temple-green/10 flex items-center justify-center">
         <span className="text-temple-green/40 font-serif text-lg">載入中...</span>
       </div>
     );
@@ -122,164 +98,130 @@ export default function HeroSlider() {
 
   /**
    * prev 函式 — 切換到上一張
-   *
-   * (p - 1 + slides.length) % slides.length：
-   *   加上 slides.length 再取餘數，處理「第一張再往前」的邊界情況
-   *   例如：slides.length = 3，current = 0 → (0-1+3) % 3 = 2（到最後一張）
-   *   不需要 useCallback，因為 prev 不放在 useEffect 的依賴陣列裡
+   * (p - 1 + slides.length) % slides.length：處理「第一張再往前」邊界
+   * 例如：slides.length = 3，current = 0 → (0-1+3) % 3 = 2（到最後一張）
    */
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
 
   return (
-    // 輪播外框：
-    //   h-[56vw] min-h-[260px]       → 手機：高度等於視窗寬度的 56%（最小 260px）
-    //   md:h-[calc(100vh-100px)]     → 平板/桌機：填滿全螢幕高度減去導覽列高度（約 100px）
-    //   overflow-hidden              → 裁切超出容器的模糊背景圖
-    <div className="relative w-full overflow-hidden h-[56vw] min-h-[260px] md:h-[calc(100vh-100px)]">
+    /*
+      輪播外框：
+        relative w-full overflow-hidden → 讓內部 absolute 按鈕可以定位
+        高度由內部圖片自然高度決定（w-full h-auto），不設固定高度
+    */
+    <div className="relative w-full overflow-hidden">
 
-      {/* ====== 輪播圖片區 ====== */}
       {/*
-        slides.map((slide, idx) => ...)：
-          遍歷 slides 陣列，為每張圖片渲染一個 div
-          map 的第二個參數 idx 是目前元素的索引（0, 1, 2...）
-        key={slide.id}：
-          React 渲染列表時需要唯一的 key，幫助它識別哪個元素對應哪個
-          讓 React 在陣列更新時能高效地更新 DOM（不必全部重畫）
+        ── CSS grid 疊加技巧 ─────────────────────────────────────────
+        問題：多張圖片互相切換時，若用 absolute inset-0 堆疊，
+              父容器會沒有高度（absolute 元素不佔版面），按鈕也無法垂直置中。
+        解法：用 CSS grid，讓所有圖片、遮罩、文字都放進「同一個格子」（gridArea: '1/1'）。
+              grid 容器高度 = 最高的子元素高度，容器有正常高度。
+              透過 opacity 切換顯示哪張圖（不裁切、不縮放、不跳版）。
+
+        注意：建議所有輪播圖片使用相同比例（橫幅），
+              若比例差異大，切換時容器高度可能有輕微變化。
       */}
-      {slides.map((slide, idx) => (
-        // absolute        → 絕對定位，相對於父元素（relative 的 div）
-        // inset-0         → top:0, right:0, bottom:0, left:0（撐滿父容器）
-        // transition-opacity → 透明度變化時加上漸變動畫
-        // duration-700    → 動畫持續 700 毫秒
-        // opacity-100     → 完全不透明（目前顯示的那張）
-        // opacity-0       → 完全透明（其他張，視覺上隱藏但仍在 DOM 裡）
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-700 ${
-            idx === current ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          {/*
-            ── 雙層圖片設計（解決照片被裁切問題）─────────────────────
+      <div className="grid grid-cols-1 w-full">
 
-            問題：object-cover 會裁切照片的上下或左右，導致「照片被吃掉」。
-            解法：兩張相同的圖疊在一起：
-              1. 底層（背景）：放大 + 模糊 + 變暗，填滿整個容器
-              2. 上層（主圖）：object-contain，完整顯示整張照片不裁切
-
-            視覺效果：照片完整呈現，四周空白被柔和的模糊背景填滿，
-                      比純黑/白背景好看很多。
-          */}
-
-          {/* 底層：模糊背景（填滿四周空白）
-              absolute inset-0 w-full h-full → 撐滿整個容器
-              object-cover                   → 填滿容器（不需要完整顯示）
-              scale-110                      → 放大 10%，讓模糊邊緣不露白邊
-              blur-xl                        → 高斯模糊（XL 強度）
-              brightness-[0.35]              → 亮度降至 35%，讓主圖更突出
-          */}
+        {/* ── 輪播圖片（每張都疊在 grid-area 1/1）────────────────── */}
+        {slides.map((slide, idx) => (
+          /*
+            key={slide.id}：React 用來識別列表元素，資料更新時只重繪必要的 DOM
+            style={{ gridArea: '1 / 1' }}：所有圖片疊在同一個格子
+            transition-opacity duration-700：透明度淡入淡出，700ms
+            opacity-100 / opacity-0：目前張完全不透明，其他張完全透明
+          */
           <img
-            src={slide.image_url}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl brightness-[0.35]"
-          />
-
-          {/* 上層：主圖（完整顯示，不裁切）
-              absolute inset-0 w-full h-full → 撐滿整個容器
-              object-contain                 → 保持比例完整顯示，不裁切任何部分
-                                               多餘空間由底層模糊背景填滿
-          */}
-          <img
+            key={slide.id}
             src={slide.image_url}
             alt={slide.title}
-            className="absolute inset-0 w-full h-full object-contain"
+            style={{ gridArea: '1 / 1' }}
+            // w-full h-auto：寬度撐滿，高度照圖片原始比例，完全不裁切
+            className={`w-full h-auto block transition-opacity duration-700 ${
+              idx === current ? 'opacity-100' : 'opacity-0'
+            }`}
           />
+        ))}
 
-          {/* 漸層遮罩：讓底部文字在圖片上更清楚可讀（定義於 index.css） */}
-          <div className="absolute inset-0 carousel-overlay" />
-        </div>
-      ))}
-
-      {/* ====== 圖片上的文字標題 ======
-          absolute      → 絕對定位在輪播容器內
-          bottom-8      → 距離底部 32px（8 × 4px）
-          left-0 right-0 → 左右拉滿，配合 text-center 讓文字水平置中
-          text-white    → 文字顏色為白色
-          px-4          → 水平內距（padding-left 和 padding-right）各 16px
-      */}
-      <div className="absolute bottom-8 left-0 right-0 text-center text-white px-4">
+        {/* ── 漸層遮罩（也在 grid-area 1/1，撐滿整個格子高度）───── */}
         {/*
-          font-serif      → 使用 serif 字體
-          text-2xl        → 字體大小 1.5rem（24px）
-          md:text-4xl     → 中型螢幕以上字體 2.25rem（36px）
-          font-bold       → 粗體
-          drop-shadow-lg  → 較大的文字陰影，讓白字在亮圖上更清楚
+          pointer-events-none：讓點擊穿透遮罩，不阻擋圖片下方的互動
+          z-10：確保遮罩在圖片上層，讓底部文字清晰可讀
+          carousel-overlay：定義於 index.css，bottom-to-top 漸層暗色
         */}
-        <h2 className="font-serif text-2xl md:text-4xl font-bold drop-shadow-lg">
-          {/* slides[current]?.title：取目前圖片的標題
-              ?. 是可選串聯（Optional Chaining），避免 slides[current] 不存在時報錯 */}
-          {slides[current]?.title}
-        </h2>
-        {/* 條件渲染：只有當目前圖片有 description 才顯示這段文字 */}
-        {slides[current]?.description && (
-          // mt-2          → 上方外距（margin-top）8px
-          // text-sm       → 字體大小 0.875rem（14px）
-          // md:text-base  → 中型螢幕以上字體 1rem（16px）
-          // text-white/90 → 白色文字，透明度 90%
-          // drop-shadow   → 較小的文字陰影
-          <p className="mt-2 text-sm md:text-base text-white/90 drop-shadow">
-            {slides[current].description}
-          </p>
-        )}
+        <div
+          style={{ gridArea: '1 / 1' }}
+          className="carousel-overlay z-10 pointer-events-none"
+        />
+
+        {/* ── 圖片上的文字標題（靠底部對齊）─────────────────────── */}
+        {/*
+          alignSelf: 'end'：在 grid 格子內靠底部對齊
+          z-20：在遮罩（z-10）上層
+          pointer-events-none：文字不阻擋使用者點擊
+        */}
+        <div
+          style={{ gridArea: '1 / 1', alignSelf: 'end' }}
+          className="relative z-20 text-center text-white px-4 pb-8 pointer-events-none"
+        >
+          {/*
+            slides[current]?.title：取目前圖片的標題
+            ?. 是可選串聯（Optional Chaining），避免 slides[current] 為 undefined 時報錯
+          */}
+          <h2 className="font-serif text-2xl md:text-4xl font-bold drop-shadow-lg">
+            {slides[current]?.title}
+          </h2>
+          {/* 條件渲染：只有當目前圖片有 description 才顯示 */}
+          {slides[current]?.description && (
+            <p className="mt-2 text-sm md:text-base text-white/90 drop-shadow">
+              {slides[current].description}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* ====== 左右切換按鈕和圓點指示（只有多張圖才顯示） ====== */}
+      {/*
+        這些元素是 absolute，定位在最外層 relative 容器內
+        z-30：確保在遮罩（z-10）和文字（z-20）上層，可以點擊
+      */}
       {slides.length > 1 && (
         <>
           {/* 左箭頭按鈕
-              absolute left-3          → 絕對定位，距離左側 12px
-              top-1/2 -translate-y-1/2 → 垂直置中（top 到 50% 再向上偏移自身高度的一半）
+              absolute left-3          → 絕對定位，距左側 12px
+              top-1/2 -translate-y-1/2 → 垂直置中
               w-9 h-9                  → 寬高各 36px
-              bg-black/40              → 黑色背景，透明度 40%
-              hover:bg-black/60        → 滑鼠懸停時透明度增到 60%
-              text-white               → 文字（箭頭符號）白色
-              rounded-full             → 圓角 9999px（圓形）
-              flex items-center justify-center → 讓箭頭符號置中
-              transition               → 屬性變化加上預設漸變動畫
+              bg-black/40 hover:bg-black/60 → 半透明背景，懸停加深
+              rounded-full             → 圓形按鈕
           */}
           <button
             onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 z-30 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition"
           >
             ‹
           </button>
 
-          {/* 右箭頭按鈕（right-3 改為靠右側 12px，其餘同左箭頭） */}
+          {/* 右箭頭按鈕 */}
           <button
             onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 z-30 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition"
           >
             ›
           </button>
 
           {/* 底部圓點指示器
-              absolute bottom-3    → 絕對定位，距底部 12px
-              left-0 right-0       → 拉滿左右
-              flex justify-center  → 水平置中排列所有圓點
-              gap-2                → 圓點之間間距 8px
+              absolute bottom-3    → 距底部 12px
+              flex justify-center  → 水平置中排列
+              gap-2                → 圓點間距 8px
           */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+          <div className="absolute bottom-3 left-0 right-0 z-30 flex justify-center gap-2">
             {/*
               slides.map((_, idx) => ...)：
-                _ 是圖片物件（這裡不需要，用底線命名表示「不使用」）
+                _ 是圖片物件（這裡不需要，用底線表示「不使用」）
                 idx 是索引，用來判斷這個圓點是否代表目前頁面
-              點擊圓點時：setCurrent(idx) 直接跳到對應圖片
-              w-2 h-2        → 寬高各 8px（小圓點）
-              rounded-full   → 圓形
-              transition-all → 所有屬性變化都加動畫
-              bg-temple-gold w-5 → 當前頁面的圓點：金色 + 寬度拉長到 20px（橫條形）
-              bg-white/60    → 其他圓點：白色半透明
+              bg-temple-gold w-5 → 當前頁面：金色 + 拉長成橫條
+              bg-white/60        → 其他：白色半透明圓點
             */}
             {slides.map((_, idx) => (
               <button
