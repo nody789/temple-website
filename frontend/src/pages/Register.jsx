@@ -19,8 +19,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
-// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
 import useScrollToTop from '../hooks/useScrollToTop';
+import PageTitle from '../components/PageTitle';
 
 export default function Register() {
   // ── useState 宣告所有狀態變數 ─────────────────────────────────
@@ -32,7 +32,6 @@ export default function Register() {
   // 初始值為各欄位的預設值（空字串或 1）
   const [form, setForm] = useState({
     name: '',         // 姓名
-    id_number: '',    // 身分證字號
     phone: '',        // 聯絡電話
     email: '',        // 電子郵件
     address: '',      // 聯絡地址
@@ -101,7 +100,7 @@ export default function Register() {
       setStatus('success');
       setMessage(res.data.message);
       // 清空表單，讓使用者可以繼續填寫下一筆
-      setForm({ name: '', id_number: '', phone: '', email: '', address: '', activity_id: '', participants: 1, notes: '' });
+      setForm({ name: '', phone: '', email: '', address: '', activity_id: '', participants: 1, notes: '' });
     } catch (err) {
       setStatus('error');
       setMessage(err.response?.data?.message || '提交失敗，請稍後再試');
@@ -207,16 +206,7 @@ export default function Register() {
         </div>
       )}
 
-      {/* 頁面標題 */}
-      <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">線上報名</h1>
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-        <p className="text-sm text-gray-500 mt-4">請填寫以下表格，廟方人員將儘快與您聯繫確認報名。</p>
-      </div>
+      <PageTitle title="線上報名" sub="請填寫以下表格，廟方人員將儘快與您聯繫確認報名。" />
 
       {/* ── 錯誤訊息（status === 'error' 才顯示）──────────────── */}
       {status === 'error' && (
@@ -268,20 +258,6 @@ export default function Register() {
             className={inputClass}
             placeholder="例：0912-345-678 或 02-1234-5678"
             required
-          />
-        </div>
-
-        {/* 身分證字號（選填）：maxLength={10} 限制最多 10 字元 */}
-        <div>
-          <label className={labelClass}>身分證字號（選填）</label>
-          <input
-            type="text"
-            name="id_number"
-            value={form.id_number}
-            onChange={handleChange}
-            className={inputClass}
-            placeholder="若活動需要身份確認，請填寫"
-            maxLength={10}
           />
         </div>
 
