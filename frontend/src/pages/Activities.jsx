@@ -17,10 +17,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
-// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
 import PageTitle from '../components/PageTitle';
-// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
 import useScrollToTop from '../hooks/useScrollToTop';
+// SkeletonCard：載入中的骨架屏佔位元件，取代純文字「載入中...」
+import SkeletonCard from '../components/SkeletonCard';
 
 export default function Activities() {
   // activities：活動資料陣列，初始為空陣列
@@ -60,24 +60,30 @@ export default function Activities() {
         3. 其餘情況 → 渲染活動卡片格網
       */}
       {loading ? (
-        <div className="text-center py-20 text-gray-400">載入中...</div>
+        // 骨架屏：顯示 4 個佔位卡片，取代「載入中...」純文字
+        // 格子數量和真實內容相同，讓使用者對頁面結構有預期感
+        <div className="grid md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonCard key={i} imageH="h-44" lines={3} />
+          ))}
+        </div>
       ) : activities.length === 0 ? (
         <div className="text-center py-20 text-gray-400">目前尚無活動</div>
       ) : (
-        // grid md:grid-cols-2：手機單欄，桌面版 2 欄；gap-6：格子間距 1.5rem
         <div className="grid md:grid-cols-2 gap-6">
-          {/*
-            .map() 列表渲染：
-              activities.map((act) => ...)：遍歷每筆活動物件 act
-              key={act.id}：以活動 id 作為唯一 key
-          */}
           {activities.map((act) => (
-            // overflow-hidden：讓圖片不超出卡片圓角邊界
             <div key={act.id} className="temple-card overflow-hidden">
-              {/* h-44 object-cover：固定高度 11rem，等比裁切填滿，不變形 */}
+              {/*
+                loading="lazy"：
+                  瀏覽器的原生懶載入（Lazy Loading）屬性。
+                  只有當圖片「快要進入可視區域」時才開始下載，
+                  不會在頁面一開啟就把所有圖片全部下載，
+                  大幅加快首次載入速度（尤其是有很多圖片的頁面）。
+              */}
               <img
                 src={act.image_url || `https://picsum.photos/seed/act${act.id}/500/250`}
                 alt={act.title}
+                loading="lazy"
                 className="w-full h-44 object-cover"
               />
               <div className="p-5">

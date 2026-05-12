@@ -102,35 +102,50 @@ export default function Contact() {
             h-full min-h-64：撐滿左欄高度，最小 16rem
         */}
         <div>
-          <div className="temple-card overflow-hidden h-full min-h-64">
-            {/* 地圖佔位區（實際部署時可替換為 Google Maps <iframe>）
-                bg-gray-100 h-64：淡灰背景，高度 16rem
-                flex items-center justify-center：內容置中
+          <div className="temple-card overflow-hidden h-full min-h-64 flex flex-col">
+            {/*
+              Google Maps 嵌入 iframe：
+                不需要 API Key，使用免費的 maps.google.com/maps?output=embed 格式
+                encodeURIComponent(address)：把中文地址轉成 URL 安全編碼
+                z=17：地圖縮放層級（數字越大越近，17 = 街道級）
+                hl=zh-TW：介面語言設為繁體中文
+                loading="lazy"：iframe 也可以懶載入，進可視區域才載入地圖
             */}
-            <div className="bg-gray-100 h-64 flex items-center justify-center">
-              <div className="text-center text-gray-400">
-                <div className="text-4xl mb-2">🗺️</div>
-                <p className="text-sm">Google 地圖</p>
-                <p className="text-xs mt-1">{settings.address || '地址待設定'}</p>
+            {settings.address ? (
+              // 有地址時：顯示真實 Google Maps
+              <iframe
+                title="廟宇位置地圖"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address)}&output=embed&hl=zh-TW&z=17`}
+                className="w-full h-72 border-0"
+                allowFullScreen
+                loading="lazy"
+              />
+            ) : (
+              // 無地址時：顯示提示佔位圖
+              <div className="bg-gray-100 h-72 flex items-center justify-center">
+                <div className="text-center text-gray-400">
+                  <div className="text-4xl mb-2">🗺️</div>
+                  <p className="text-sm">地址尚未設定</p>
+                  <p className="text-xs mt-1">請至後台設定廟宇地址</p>
+                </div>
               </div>
-            </div>
-            <div className="p-4">
+            )}
+
+            {/* 地圖下方資訊列 */}
+            <div className="p-4 mt-auto">
               <p className="text-sm text-gray-600">
-                如需導航，請以「{settings.site_name || '玄天上帝廟'}」搜尋 Google Maps
+                如需導航，請以「{settings.site_name || '南天母中壇元帥道場'}」搜尋 Google Maps
               </p>
-              {/*
-                encodeURIComponent()：把地址中的中文、空格等轉成 URL 安全編碼（空格 → %20）
-                target="_blank"：在新分頁開啟
-                rel="noopener noreferrer"：安全性設定，防止新分頁存取 window.opener
-              */}
-              <a
-                href={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address || '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-block text-sm text-temple-green hover:underline"
-              >
-                在 Google Maps 中開啟 ›
-              </a>
+              {settings.address && (
+                <a
+                  href={`https://maps.google.com/maps?q=${encodeURIComponent(settings.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-sm text-temple-green hover:underline"
+                >
+                  在 Google Maps 中開啟 ›
+                </a>
+              )}
             </div>
           </div>
         </div>

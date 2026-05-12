@@ -92,6 +92,7 @@ export default function Environment() {
             <img
               src={area.img}
               alt={area.name}
+              loading="lazy"
               className="w-full h-52 object-cover"
             />
             <div className="p-5">

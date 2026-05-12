@@ -65,11 +65,13 @@ export default function About() {
         <img
           src="https://picsum.photos/seed/temple_main/600/400"
           alt="廟宇正面"
+          loading="lazy"
           className="w-full h-56 object-cover rounded-sm shadow-md border-2 border-temple-gold/30"
         />
         <img
           src="https://picsum.photos/seed/temple_hall/600/400"
           alt="正殿內部"
+          loading="lazy"
           className="w-full h-56 object-cover rounded-sm shadow-md border-2 border-temple-gold/30"
         />
       </div>

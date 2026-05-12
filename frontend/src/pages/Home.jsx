@@ -194,6 +194,7 @@ export default function Home() {
                 <img
                   src={act.image_url || `https://picsum.photos/seed/act${act.id}/400/220`}
                   alt={act.title}
+                  loading="lazy"
                   className="w-full h-40 object-cover"
                 />
                 <div className="p-4">

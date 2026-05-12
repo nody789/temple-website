@@ -18,10 +18,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
-// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
 import PageTitle from '../components/PageTitle';
-// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
 import useScrollToTop from '../hooks/useScrollToTop';
+// SkeletonNewsItem：新聞列表專用骨架屏（橫向樣式）
+import { SkeletonNewsItem } from '../components/SkeletonCard';
 
 export default function News() {
   // news：儲存從 API 取得的新聞陣列，初始值為空陣列 []
@@ -75,8 +75,12 @@ export default function News() {
         這是 React 頁面「先判斷載入，再判斷資料是否為空」的常見模式
       */}
       {loading ? (
-        // py-20：上下 padding 5rem，讓文字在視覺上置中
-        <div className="text-center py-20 text-gray-400">載入中...</div>
+        // 骨架屏：顯示 5 個新聞列表佔位項目
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <SkeletonNewsItem key={i} />
+          ))}
+        </div>
       ) : news.length === 0 ? (
         <div className="text-center py-20 text-gray-400">目前尚無消息</div>
       ) : (

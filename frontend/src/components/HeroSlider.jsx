@@ -113,12 +113,8 @@ export default function HeroSlider() {
    */
   if (slides.length === 0) {
     return (
-      <div className="w-full h-[280px] sm:h-[420px] md:h-[580px] lg:h-[calc(100vh-96px)] bg-temple-green/10 flex items-center justify-center">
-        {/*
-          text-temple-green/40 → 文字顏色 temple-green，透明度 40%
-          font-serif           → 使用 serif 字體（tailwind.config.js 定義的字體族）
-          text-lg              → 字體大小 1.125rem（約 18px）
-        */}
+      // 高度與下方主體保持一致：手機 56vw（最小 260px），md 以上接近全螢幕
+      <div className="w-full h-[56vw] min-h-[260px] md:h-[calc(100vh-100px)] bg-temple-green/10 flex items-center justify-center">
         <span className="text-temple-green/40 font-serif text-lg">載入中...</span>
       </div>
     );
@@ -135,11 +131,11 @@ export default function HeroSlider() {
   const prev = () => setCurrent((p) => (p - 1 + slides.length) % slides.length);
 
   return (
-    // relative       → 建立相對定位父容器，子元素可用 absolute 相對它定位
-    // w-full         → 寬度 100%
-    // overflow-hidden → 超出容器邊界的內容直接裁切（隱藏）
-    // h-64 ~ xl:h-[640px] → 響應式高度（同上方說明）
-    <div className="relative w-full overflow-hidden h-[280px] sm:h-[420px] md:h-[580px] lg:h-[calc(100vh-96px)]">
+    // 輪播外框：
+    //   h-[56vw] min-h-[260px]       → 手機：高度等於視窗寬度的 56%（最小 260px）
+    //   md:h-[calc(100vh-100px)]     → 平板/桌機：填滿全螢幕高度減去導覽列高度（約 100px）
+    //   overflow-hidden              → 裁切超出容器的模糊背景圖
+    <div className="relative w-full overflow-hidden h-[56vw] min-h-[260px] md:h-[calc(100vh-100px)]">
 
       {/* ====== 輪播圖片區 ====== */}
       {/*
@@ -164,18 +160,43 @@ export default function HeroSlider() {
           }`}
         >
           {/*
-            w-full       → 寬度 100%
-            h-full       → 高度 100%（撐滿父容器）
-            object-cover → 圖片縮放方式：保持比例但裁切以填滿容器
-                           類似 CSS background-size: cover 的效果
+            ── 雙層圖片設計（解決照片被裁切問題）─────────────────────
+
+            問題：object-cover 會裁切照片的上下或左右，導致「照片被吃掉」。
+            解法：兩張相同的圖疊在一起：
+              1. 底層（背景）：放大 + 模糊 + 變暗，填滿整個容器
+              2. 上層（主圖）：object-contain，完整顯示整張照片不裁切
+
+            視覺效果：照片完整呈現，四周空白被柔和的模糊背景填滿，
+                      比純黑/白背景好看很多。
+          */}
+
+          {/* 底層：模糊背景（填滿四周空白）
+              absolute inset-0 w-full h-full → 撐滿整個容器
+              object-cover                   → 填滿容器（不需要完整顯示）
+              scale-110                      → 放大 10%，讓模糊邊緣不露白邊
+              blur-xl                        → 高斯模糊（XL 強度）
+              brightness-[0.35]              → 亮度降至 35%，讓主圖更突出
+          */}
+          <img
+            src={slide.image_url}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl brightness-[0.35]"
+          />
+
+          {/* 上層：主圖（完整顯示，不裁切）
+              absolute inset-0 w-full h-full → 撐滿整個容器
+              object-contain                 → 保持比例完整顯示，不裁切任何部分
+                                               多餘空間由底層模糊背景填滿
           */}
           <img
             src={slide.image_url}
             alt={slide.title}
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
           />
-          {/* 漸層遮罩：讓圖片上的白色文字更清楚可讀
-              carousel-overlay 是自訂 CSS class，定義在 index.css */}
+
+          {/* 漸層遮罩：讓底部文字在圖片上更清楚可讀（定義於 index.css） */}
           <div className="absolute inset-0 carousel-overlay" />
         </div>
       ))}
