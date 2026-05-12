@@ -19,6 +19,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 export default function Register() {
   // ── useState 宣告所有狀態變數 ─────────────────────────────────
@@ -56,9 +58,11 @@ export default function Register() {
     return String(d).slice(0, 10); // 只取 YYYY-MM-DD
   };
 
+  // useScrollToTop：進頁面時捲到最頂端（自訂 Hook）
+  useScrollToTop();
+
   // useEffect：頁面載入後取得活動清單（空陣列 → 只執行一次）
   useEffect(() => {
-    window.scrollTo(0, 0);
     api.get('/activities').then((res) => setActivities(res.data)).catch(() => {});
   }, []);
 

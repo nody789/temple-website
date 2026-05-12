@@ -73,6 +73,24 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: '請輸入正確的電話號碼格式' });
     }
 
+    // ── 驗證活動是否存在且啟用中 ──────────────────────────────
+    // 前端表單只顯示啟用中的活動，但攻擊者可以用 Postman / curl 等工具
+    // 直接送出請求，繞過前端限制。後端必須再次確認活動有效。
+    //
+    // 情境：如果 activity_id 有填寫（非空），就去資料庫查這個活動：
+    //   - 活動不存在 → 拒絕（防止任意 id 注入）
+    //   - 活動存在但 active = 0（已下架）→ 拒絕（防止對過期活動報名）
+    //   - 活動存在且 active = 1 → 繼續往下執行
+    if (activity_id) {
+      const actCheck = await pool.query(
+        'SELECT id FROM activities WHERE id = $1 AND active = 1',
+        [activity_id]
+      );
+      if (!actCheck.rows[0]) {
+        return res.status(400).json({ message: '所選活動不存在或已截止報名' });
+      }
+    }
+
     // ── 寫入資料庫 ────────────────────────────────────────────
     const { rows } = await pool.query(
       'INSERT INTO registrations (name, id_number, phone, email, address, activity_id, participants, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',

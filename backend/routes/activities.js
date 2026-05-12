@@ -64,14 +64,16 @@ router.get('/all', auth, async (req, res) => {
 // ============================================================
 // GET /api/activities/:id — 前台：取得單一活動詳細資訊
 //
-// 注意：這裡沒有加 AND active = 1，
-// 表示即使活動被隱藏，只要知道 id 就能查看（報名頁面可能需要這樣的行為）。
+// 和 GET /api/activities 一樣加上 AND active = 1：
+//   確保已下架的活動不能透過直接輸入 id 被公開存取。
+//   （舊版沒有這個限制，有安全漏洞）
 // ============================================================
 router.get('/:id', async (req, res) => {
   try {
     // req.params.id：從 URL 取得路由參數
     // 例如 GET /api/activities/5 → req.params.id = '5'
-    const { rows } = await pool.query('SELECT * FROM activities WHERE id = $1', [req.params.id]);
+    // AND active = 1：確保只有啟用中的活動才能被公開查詢
+    const { rows } = await pool.query('SELECT * FROM activities WHERE id = $1 AND active = 1', [req.params.id]);
 
     // 如果 rows[0] 是 undefined，代表沒有這個 id 的活動，回傳 404
     if (!rows[0]) return res.status(404).json({ message: '找不到此活動' });

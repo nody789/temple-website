@@ -52,6 +52,65 @@ cloudinary.config({
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']; // 圖片格式
 const VIDEO_EXTS = ['.mp4', '.webm', '.mov'];                  // 影片格式
 
+// ── Magic Bytes（魔術位元組）偵測函式 ──────────────────────────
+//
+// 問題背景：
+//   HTTP 請求裡的 Content-Type（即 multer 的 file.mimetype）是由「瀏覽器或攻擊者」
+//   提供的，可以輕易偽造。攻擊者可以把一個 .exe 惡意程式的 Content-Type
+//   設成 image/jpeg，就能繞過只檢查 mimetype 的過濾器。
+//
+// 解決方法：讀取檔案的「Magic Bytes」（魔術位元組）
+//   每種檔案格式在檔案最開頭都有固定的二進位數值（十六進位），
+//   像 DNA 指紋一樣，是檔案內容的一部分，比 MIME type 更難偽造。
+//
+//   常見格式的 Magic Bytes（十六進位）：
+//     JPEG:  FF D8 FF
+//     PNG:   89 50 4E 47（即 \x89PNG）
+//     GIF:   47 49 46 38（即 GIF8）
+//     WebP:  52 49 46 46 .. .. .. .. 57 45 42 50（RIFF....WEBP）
+//     MP4:   ?? ?? ?? ?? 66 74 79 70（第 4-7 位元組是 ftyp box 標記）
+//     WebM:  1A 45 DF A3（EBML 格式標記）
+//
+// 參數：buffer (Buffer) — multer memoryStorage 儲存的檔案二進位資料
+// 回傳：偵測到的 MIME 類型字串，若無法識別則回傳 null
+function detectMimeFromBuffer(buffer) {
+  // 至少需要 12 個位元組才能可靠地識別所有格式
+  if (!buffer || buffer.length < 12) return null;
+
+  // JPEG：開頭固定是 FF D8 FF（三個位元組）
+  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) return 'image/jpeg';
+
+  // PNG：開頭固定是 89 50 4E 47（即 ASCII 的 \x89PNG）
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) return 'image/png';
+
+  // GIF：開頭固定是 47 49 46 38（即 ASCII 的 GIF8，包含 GIF87a 和 GIF89a）
+  if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x38) return 'image/gif';
+
+  // WebP：位元組 0-3 是 RIFF，位元組 8-11 是 WEBP
+  //   完整格式：52 49 46 46 [4 bytes size] 57 45 42 50
+  if (
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) return 'image/webp';
+
+  // MP4：第 4-7 位元組是 ftyp box（幾乎所有 MP4/M4V 都有這個標記）
+  //   66 74 79 70 = ASCII 的 "ftyp"
+  if (buffer[4] === 0x66 && buffer[5] === 0x74 && buffer[6] === 0x79 && buffer[7] === 0x70) return 'video/mp4';
+
+  // WebM：開頭是 1A 45 DF A3（EBML 格式的 Header 標記）
+  if (buffer[0] === 0x1A && buffer[1] === 0x45 && buffer[2] === 0xDF && buffer[3] === 0xA3) return 'video/webm';
+
+  return null; // 無法識別的格式 → 拒絕
+}
+
+// ── 允許的真實 MIME 類型（對應 Magic Bytes 偵測結果）────────────
+// 這份清單對應 detectMimeFromBuffer() 可能回傳的值，
+// 用來比對偵測結果是否在允許範圍內
+const ALLOWED_REAL_MIMES = [
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'video/mp4', 'video/webm',
+];
+
 // ── 自訂 multer 檔案篩選器 ───────────────────────────────────
 // fileFilter 是 multer 的設定選項：
 //   每次有檔案要上傳，multer 會呼叫這個函式，讓我們決定是否接受
@@ -107,9 +166,15 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   // 如果 multer 沒有解析到檔案（前端沒有附上檔案），req.file 會是 undefined
   if (!req.file) return res.status(400).json({ message: '請選擇要上傳的檔案' });
 
-  // 判斷上傳的是圖片還是影片（Cloudinary 需要知道 resource_type）
-  const ext = path.extname(req.file.originalname).toLowerCase();
-  const isVideo = VIDEO_EXTS.includes(ext); // true = 影片，false = 圖片
+  // ── Magic Bytes 驗證（防偽裝攻擊）────────────────────────────
+  // 第一道防線（multer fileFilter）只檢查副檔名，可被繞過。
+  // 第二道防線（這裡）讀取檔案二進位內容的前幾個位元組，
+  // 確認「檔案實際上是什麼格式」，和「宣稱的格式」一致。
+  const realMime = detectMimeFromBuffer(req.file.buffer);
+  if (!realMime || !ALLOWED_REAL_MIMES.includes(realMime)) {
+    // 偵測失敗或格式不在允許清單 → 拒絕上傳
+    return res.status(400).json({ message: '檔案格式驗證失敗，僅接受圖片（JPG/PNG/GIF/WebP）或影片（MP4/WebM）' });
+  }
 
   try {
     // ── 把檔案串流上傳到 Cloudinary ──────────────────────────
@@ -123,6 +188,9 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     // new Promise((resolve, reject) => {...})：
     //   resolve(value)：Promise 成功，把 value 傳給 .then() 或 await 的回傳值
     //   reject(error)：Promise 失敗，把 error 傳給 .catch() 或 try/catch
+    // 用 realMime（已驗證的真實 MIME）判斷 Cloudinary 的 resource_type，更可靠
+    const isVideo = realMime.startsWith('video/');
+
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {

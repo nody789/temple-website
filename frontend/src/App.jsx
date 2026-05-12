@@ -45,6 +45,9 @@ import SiteSettings from './pages/admin/SiteSettings';          // 網站設定
 // ProtectedRoute：路由守衛元件，未登入時自動跳轉到登入頁
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
+// ErrorBoundary：全域錯誤邊界，捕捉子元件樹的未處理錯誤，防止白畫面
+import ErrorBoundary from './components/ErrorBoundary';
+
 /**
  * App 元件：定義全站路由規則
  *
@@ -58,6 +61,12 @@ function App() {
      * BrowserRouter：整個應用只需要一個，放在最外層
      * 它讓 React 能夠偵測瀏覽器 URL 的變化並做出反應
      */
+    {/*
+      ErrorBoundary 包住整個路由系統：
+      任何頁面元件在渲染中拋出未捕捉的錯誤，
+      都會被 ErrorBoundary 接住，顯示友善的錯誤畫面而非白畫面。
+    */}
+    <ErrorBoundary>
     <BrowserRouter>
       {/*
         Routes：像一個「路由比對容器」
@@ -141,8 +150,34 @@ function App() {
           <Route path="settings" element={<SiteSettings />} />                 {/* /admin/settings */}
         </Route>
 
+        {/*
+          404 萬用路由（catch-all）：
+          當使用者輸入不存在的路徑時（例如 /xyz），
+          * 會匹配所有未被上面 Route 處理的路徑，顯示 404 頁面。
+          必須放在所有 Route 的最後面（React Router 由上往下匹配，先到先得）。
+        */}
+        <Route
+          path="*"
+          element={
+            <>
+              <Navbar />
+              {/* 404 頁面：直接用 JSX 寫，不需要獨立元件 */}
+              <main className="min-h-[60vh] flex items-center justify-center px-4">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🙏</div>
+                  <h1 className="font-serif text-3xl text-temple-green-dark mb-2">找不到頁面</h1>
+                  <p className="text-gray-500 mb-6">您所尋找的頁面不存在，請確認網址是否正確。</p>
+                  <a href="/" className="btn-primary inline-block">回到首頁</a>
+                </div>
+              </main>
+              <Footer />
+            </>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

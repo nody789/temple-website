@@ -17,6 +17,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
+// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
+import PageTitle from '../components/PageTitle';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 export default function Activities() {
   // activities：活動資料陣列，初始為空陣列
@@ -24,9 +28,11 @@ export default function Activities() {
   // loading：是否正在向後端請求資料，初始值 true
   const [loading, setLoading] = useState(true);
 
-  // useEffect：頁面掛載後執行一次（空依賴陣列）
+  // useScrollToTop：進頁面時捲到最頂端（自訂 Hook）
+  useScrollToTop();
+
+  // useEffect：頁面掛載後執行一次（只負責 API 請求）
   useEffect(() => {
-    window.scrollTo(0, 0);
     api.get('/activities')
       .then((res) => setActivities(res.data)) // 成功：儲存活動陣列
       .finally(() => setLoading(false));       // 完成：關閉 loading
@@ -44,15 +50,8 @@ export default function Activities() {
     <main className="max-w-5xl mx-auto px-4 py-12">
       <SEOHead title="活動訊息" />
 
-      {/* 頁面標題 */}
-      <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">活動訊息</h1>
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-      </div>
+      {/* PageTitle：共用的頁面標題元件 */}
+      <PageTitle title="活動訊息" />
 
       {/*
         ── 三層條件渲染（巢狀三元運算子）────────────────────────

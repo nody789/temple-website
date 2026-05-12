@@ -68,20 +68,46 @@ app.use(cors({ origin: corsOrigin }));
 // 這樣在路由處理函式中才能用 req.body.xxx 取得資料。
 app.use(express.json());
 
-// ── 登入速率限制（防暴力破解）────────────────────────────────
-// Rate Limiting：限制同一 IP 在一段時間內的請求次數，
-// 防止攻擊者用程式不斷嘗試帳號密碼（暴力破解）。
+// ── 速率限制（Rate Limiting）設定 ──────────────────────────────
+// Rate Limiting 的作用：限制同一個 IP 位址在一段時間內的請求次數。
+// 目的：防止以下攻擊行為：
+//   - 暴力破解（Brute Force）：不斷嘗試不同密碼
+//   - 垃圾表單（Form Spam）：程式自動大量送出報名
+//   - 配額耗盡（Quota Abuse）：惡意上傳大量檔案榨乾 Cloudinary 免費配額
 //
-// 這裡只對 /api/auth/login 這個路由套用：
-//   windowMs：時間窗口，15 分鐘（15 * 60 * 1000 毫秒）
-//   max: 10：同一 IP 在 15 分鐘內最多只能發 10 次請求
-//   超過限制時回傳 429 Too Many Requests，附上 message
+// HTTP 429 Too Many Requests：超過速率限制時回傳的標準狀態碼。
+// standardHeaders: true → 在回應 Headers 加入 RateLimit-* 標準欄位。
+// legacyHeaders: false  → 不用舊版的 X-RateLimit-* 格式。
+
+// 登入：防暴力破解（15 分鐘最多 10 次）
 app.use('/api/auth/login', rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 分鐘
-  max: 10,                  // 最多 10 次嘗試
-  standardHeaders: true,    // 在回應 header 中加入 RateLimit-* 資訊
-  legacyHeaders: false,     // 不使用舊版的 X-RateLimit-* header
-  message: { message: '嘗試次數過多，請 15 分鐘後再試' }, // 超限時的錯誤訊息
+  windowMs: 15 * 60 * 1000, // 時間窗口：15 分鐘（毫秒）
+  max: 10,                  // 同一 IP 在窗口內最多 10 次請求
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: '嘗試次數過多，請 15 分鐘後再試' },
+}));
+
+// 報名：防止程式自動大量送出垃圾報名（10 分鐘最多 5 次）
+// 理由：真實使用者不可能在 10 分鐘內報名 5 次以上
+app.use('/api/registration', rateLimit({
+  windowMs: 10 * 60 * 1000, // 時間窗口：10 分鐘
+  max: 5,                   // 同一 IP 在 10 分鐘內最多 5 筆報名
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: '提交次數過多，請稍後再試' },
+  // skip：只對 POST 請求（送出報名）限制，GET 請求（後台查詢）不受影響
+  skip: (req) => req.method !== 'POST',
+}));
+
+// 上傳：防止惡意耗盡 Cloudinary 免費配額（1 小時最多 30 次）
+// Cloudinary 免費方案每月有上傳次數限制，需要保護
+app.use('/api/upload', rateLimit({
+  windowMs: 60 * 60 * 1000, // 時間窗口：1 小時
+  max: 30,                  // 同一 IP 每小時最多上傳 30 次
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: '上傳次數超過限制，請稍後再試' },
 }));
 
 // ── 掛載 API 路由 ─────────────────────────────────────────────

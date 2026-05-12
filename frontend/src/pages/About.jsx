@@ -10,11 +10,13 @@
  *   - .map() 渲染物件陣列與字串陣列
  */
 
-// useEffect：用來執行「進入頁面後捲到最上方」這個副作用
-import { useEffect } from 'react';
 // useSettings：取得後台設定值（廟名、地址、電話等）的自訂 Hook
 import { useSettings } from '../context/SettingsContext';
 import SEOHead from '../components/SEOHead';
+// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
+import PageTitle from '../components/PageTitle';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 // 工具函式：判斷影片連結類型，回傳 'youtube'、'direct' 或 null
 function getVideoType(url) {
@@ -39,29 +41,20 @@ export default function About() {
   // useSettings()：從 SettingsContext 讀取全域設定物件
   const settings = useSettings();
 
-  // useEffect：進入頁面時捲到最頂端
-  // [] 空依賴陣列 → 只在元件第一次掛載時執行一次
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // useScrollToTop()：進入頁面時捲到最頂端（自訂 Hook）
+  // 取代原本的 useEffect(() => window.scrollTo(0,0), [])，更簡潔
+  useScrollToTop();
 
   return (
     // max-w-5xl：最大寬度 64rem；mx-auto：水平置中；px-4 py-12：內距
     <main className="max-w-5xl mx-auto px-4 py-12">
       <SEOHead title="本廟簡介" />
 
-      {/* ── 頁面標題區塊 ──────────────────────────────────────── */}
-      <div className="text-center mb-12">
-        {/* font-serif：襯線字體；text-3xl：1.875rem */}
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">本廟簡介</h1>
-        {/* 裝飾分隔線：flex items-center justify-center 讓三個元素水平置中並排 */}
-        <div className="flex items-center justify-center gap-3">
-          {/* w-16 h-0.5：寬 4rem、高 2px 的金色橫線 */}
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-      </div>
+      {/*
+        PageTitle：共用的頁面標題元件
+        className="mb-12" 覆蓋預設的 mb-10，讓標題下方有更多間距
+      */}
+      <PageTitle title="本廟簡介" className="mb-12" />
 
       {/* ── 廟宇照片（兩張並排）──────────────────────────────────
           grid md:grid-cols-2：桌面版兩欄，手機版單欄

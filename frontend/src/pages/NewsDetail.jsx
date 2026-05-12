@@ -19,6 +19,8 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 export default function NewsDetail() {
   // useParams 解構取得 URL 的 id 參數
@@ -32,11 +34,15 @@ export default function NewsDetail() {
   // error：是否發生錯誤（如 id 不存在），初始值 false
   const [error, setError] = useState(false);
 
+  // useScrollToTop：進頁面時捲到最頂端（自訂 Hook）
+  // 注意：這裡的 useScrollToTop 在 id 改變時也會重新捲頂，
+  // 因為 id 改變 → 元件重新掛載（React Router 的行為）
+  useScrollToTop();
+
   // useEffect 依賴陣列填入 [id]（不是空陣列）：
   //   當使用者從 /news/1 切換到 /news/2 時，id 改變，
   //   useEffect 重新執行，向後端請求新的資料
   useEffect(() => {
-    window.scrollTo(0, 0);
     api.get(`/news/${id}`)              // 用模板字串帶入動態 id
       .then((res) => setItem(res.data)) // 成功：儲存消息資料
       .catch(() => setError(true))      // 失敗：標記錯誤

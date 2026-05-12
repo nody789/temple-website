@@ -12,36 +12,28 @@
  *   - Tailwind Grid 兩欄排版、space-y-4 縱向間距
  */
 
-// useEffect：用於執行捲到頂端的副作用
-import { useEffect } from 'react';
 // useSettings：取得廟宇設定值（廟名、地址、電話等）
 import { useSettings } from '../context/SettingsContext';
 import SEOHead from '../components/SEOHead';
+// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
+import PageTitle from '../components/PageTitle';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 export default function Contact() {
   // useSettings()：從 SettingsContext 讀取全域設定物件
   const settings = useSettings();
 
-  // useEffect：進入頁面時捲到最頂端
-  // [] 空陣列 → 只執行一次（元件掛載時）
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // useScrollToTop()：進入頁面時捲到最頂端（自訂 Hook）
+  useScrollToTop();
 
   return (
     // max-w-4xl：最大寬 56rem；mx-auto px-4 py-12：置中與內距
     <main className="max-w-4xl mx-auto px-4 py-12">
       <SEOHead title="聯絡我們" />
 
-      {/* 頁面標題 */}
-      <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">聯絡我們</h1>
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-      </div>
+      {/* PageTitle：共用的頁面標題元件 */}
+      <PageTitle title="聯絡我們" />
 
       {/* ── 主要內容區：兩欄 Grid ──────────────────────────────────
           grid md:grid-cols-2：桌面版分成兩欄，手機版單欄

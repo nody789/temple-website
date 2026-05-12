@@ -18,6 +18,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEOHead from '../components/SEOHead';
+// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
+import PageTitle from '../components/PageTitle';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 export default function News() {
   // news：儲存從 API 取得的新聞陣列，初始值為空陣列 []
@@ -26,21 +30,30 @@ export default function News() {
   // 用來決定要顯示「載入中...」文字還是實際內容
   const [loading, setLoading] = useState(true);
 
-  // useEffect：元件掛載後執行一次
-  // [] 空陣列 → 只執行一次
+  // useScrollToTop：進頁面時捲到最頂端（自訂 Hook，取代原本的 useEffect）
+  useScrollToTop();
+
+  // useEffect：元件掛載後執行一次（只負責 API 請求，捲頂端已交給 useScrollToTop）
   useEffect(() => {
-    window.scrollTo(0, 0); // 進入頁面時捲到最頂端
     api.get('/news')
       .then((res) => setNews(res.data)) // 成功：把資料存入 news
       .finally(() => setLoading(false)); // .finally() 一定會執行，關閉 loading
   }, []);
 
-  // 格式化日期："2024-12-25" → "2024 年 12 月 25 日"
-  // getMonth() 從 0 開始，所以要 +1
+  // 格式化日期："2024-12-25T16:00:00.000Z" → "2024 年 12 月 25 日"
+  //
+  // 為什麼不用 new Date(dateStr)？
+  //   new Date('2024-12-25') 在不同瀏覽器、不同時區的解析結果不一致，
+  //   可能因時區偏移出現「12 月 24 日」的錯誤。
+  //
+  // 解決方法：用字串截取，直接取 YYYY-MM-DD 部分，避開時區問題
+  //   String(dateStr).slice(0, 10) → '2024-12-25'（取前10碼）
+  //   .split('-')                  → ['2024', '12', '25']
+  //   parseInt(m) 把字串轉整數：'01' → 1（去除前導零，顯示 1 月而非 01 月）
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日`;
+    const [y, m, d] = String(dateStr).slice(0, 10).split('-');
+    return `${y} 年 ${parseInt(m)} 月 ${parseInt(d)} 日`;
   };
 
   return (
@@ -48,16 +61,8 @@ export default function News() {
     <main className="max-w-4xl mx-auto px-4 py-12">
       <SEOHead title="最新消息" />
 
-      {/* 頁面標題 */}
-      <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">最新消息</h1>
-        {/* 裝飾分隔線：flex + items-center + justify-center 讓三元素水平置中並排 */}
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-      </div>
+      {/* PageTitle：共用的頁面標題元件（預設 mb-10） */}
+      <PageTitle title="最新消息" />
 
       {/*
         ── 三層條件渲染（巢狀三元運算子）────────────────────────

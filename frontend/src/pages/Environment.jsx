@@ -11,9 +11,11 @@
  *   - key={area.name}：靜態資料可用唯一名稱字串作 key
  */
 
-// useEffect：進頁面時捲到頂端（這頁沒有 API 呼叫，不需要 useState）
-import { useEffect } from 'react';
 import SEOHead from '../components/SEOHead';
+// PageTitle：共用的「大標題 + 金色裝飾分隔線」元件
+import PageTitle from '../components/PageTitle';
+// useScrollToTop：自訂 Hook，進頁面時自動捲到最頂端
+import useScrollToTop from '../hooks/useScrollToTop';
 
 // ── 靜態資料陣列（定義在元件函式外）──────────────────────────────
 // 這份資料不需要從 API 取得，直接寫死
@@ -52,28 +54,25 @@ const areas = [
 ];
 
 export default function Environment() {
-  // useEffect：進頁面時捲到頂端
+  // useScrollToTop：進頁面時捲到最頂端（自訂 Hook，一行取代 useEffect）
   // 注意：這個元件沒有任何 useState，因為資料是靜態的（areas 陣列）
-  // [] 空陣列 → 只在掛載時執行一次
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  useScrollToTop();
 
   return (
     // max-w-5xl mx-auto px-4 py-12：最大寬 64rem，水平置中，內距
     <main className="max-w-5xl mx-auto px-4 py-12">
       <SEOHead title="環境介紹" />
 
-      {/* 頁面標題 */}
-      <div className="text-center mb-12">
-        <h1 className="font-serif text-3xl text-temple-green-dark mb-2">環境介紹</h1>
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-16 h-0.5 bg-temple-gold" />
-          <span className="text-temple-gold text-xl">❖</span>
-          <div className="w-16 h-0.5 bg-temple-gold" />
-        </div>
-        <p className="text-sm text-gray-500 mt-4">歡迎參觀本廟各項設施，感受莊嚴清幽的宗教氛圍</p>
-      </div>
+      {/*
+        PageTitle：共用的頁面標題元件
+        sub prop：標題下方的說明文字
+        className="mb-12"：覆蓋預設 mb-10，讓標題與卡片格網之間有更多空間
+      */}
+      <PageTitle
+        title="環境介紹"
+        sub="歡迎參觀本廟各項設施，感受莊嚴清幽的宗教氛圍"
+        className="mb-12"
+      />
 
       {/* ── 區域卡片格網 ──────────────────────────────────────────
           grid md:grid-cols-2：桌面版 2 欄，手機版單欄
