@@ -113,7 +113,7 @@ export default function HeroSlider() {
    */
   if (slides.length === 0) {
     return (
-      <div className="w-full h-64 sm:h-80 md:h-[460px] lg:h-[560px] xl:h-[640px] bg-temple-green/10 flex items-center justify-center">
+      <div className="w-full h-[280px] sm:h-[420px] md:h-[580px] lg:h-[calc(100vh-96px)] bg-temple-green/10 flex items-center justify-center">
         {/*
           text-temple-green/40 → 文字顏色 temple-green，透明度 40%
           font-serif           → 使用 serif 字體（tailwind.config.js 定義的字體族）
@@ -139,7 +139,7 @@ export default function HeroSlider() {
     // w-full         → 寬度 100%
     // overflow-hidden → 超出容器邊界的內容直接裁切（隱藏）
     // h-64 ~ xl:h-[640px] → 響應式高度（同上方說明）
-    <div className="relative w-full overflow-hidden h-64 sm:h-80 md:h-[460px] lg:h-[560px] xl:h-[640px]">
+    <div className="relative w-full overflow-hidden h-[280px] sm:h-[420px] md:h-[580px] lg:h-[calc(100vh-96px)]">
 
       {/* ====== 輪播圖片區 ====== */}
       {/*

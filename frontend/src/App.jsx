@@ -56,18 +56,13 @@ import ErrorBoundary from './components/ErrorBoundary';
  *   - 小寫開頭（div、span、button）→ 被視為原生 HTML 標籤
  */
 function App() {
+  // ErrorBoundary 包住整個路由系統：
+  // 任何頁面元件在渲染中拋出未捕捉的錯誤，
+  // 都會被 ErrorBoundary 接住，顯示友善的錯誤畫面而非白畫面。
+  // BrowserRouter：整個應用只需要一個，放在最外層，讓 React 偵測 URL 變化。
   return (
-    /**
-     * BrowserRouter：整個應用只需要一個，放在最外層
-     * 它讓 React 能夠偵測瀏覽器 URL 的變化並做出反應
-     */
-    {/*
-      ErrorBoundary 包住整個路由系統：
-      任何頁面元件在渲染中拋出未捕捉的錯誤，
-      都會被 ErrorBoundary 接住，顯示友善的錯誤畫面而非白畫面。
-    */}
     <ErrorBoundary>
-    <BrowserRouter>
+      <BrowserRouter>
       {/*
         Routes：像一個「路由比對容器」
         React Router 會從上到下比對 URL，找到符合的 Route 就渲染對應的 element
@@ -176,7 +171,7 @@ function App() {
         />
 
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }
